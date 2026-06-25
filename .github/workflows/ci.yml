@@ -8,33 +8,45 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Lint + Test (${{ matrix.shell }})
+  windows-powershell:
+    name: Lint + Test (Windows PowerShell 5.1)
     runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # Windows PowerShell 5.1 (Desktop) and PowerShell 7+ (Core).
-        shell: [ powershell, pwsh ]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Lint + Test + Package
-        shell: ${{ matrix.shell }}
+        shell: powershell
         run: ./build.ps1 -Bootstrap -Task All
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: testResults-${{ matrix.shell }}
+          name: testResults-windows-powershell
+          path: output/testResults.xml
+          if-no-files-found: ignore
+
+  pwsh:
+    name: Lint + Test (PowerShell 7)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint + Test + Package
+        shell: pwsh
+        run: ./build.ps1 -Bootstrap -Task All
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testResults-pwsh
           path: output/testResults.xml
           if-no-files-found: ignore
 
       - name: Upload module package
-        if: matrix.shell == 'pwsh'
         uses: actions/upload-artifact@v4
         with:
           name: PacKit-module
