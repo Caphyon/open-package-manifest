@@ -1,0 +1,19 @@
+PacKit PowerShell module
+Copyright (c) Caphyon LTD. All rights reserved.
+
+This software is part of the PacKit product. Use of this software is governed by
+the PacKit End User License Agreement (EULA):
+
+    https://www.getpackit.com/eula/
+
+Unless otherwise agreed in writing by Caphyon LTD, this module is provided to
+enable instrumentation and authoring of PacKit `.packit` metadata in automated
+(CI/CD) pipelines. You may use and redistribute it in unmodified form together
+with your PacKit-based workflows, subject to the EULA.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

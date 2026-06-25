@@ -1,0 +1,51 @@
+# GitLab CI/CD for the PacKit PowerShell module.
+#
+# Requires a Windows runner with PowerShell. Adjust the `tags` under .windows to
+# match your runner. Set PSGALLERY_API_KEY as a protected, masked CI/CD variable
+# for the publish stage.
+
+stages:
+  - lint
+  - test
+  - release
+
+default:
+  interruptible: true
+
+.windows:
+  tags: [ windows, powershell ]   # <-- adjust to your runner tags
+
+lint:
+  extends: .windows
+  stage: lint
+  script:
+    - powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Bootstrap -Task Lint
+
+test:
+  extends: .windows
+  stage: test
+  script:
+    - powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Bootstrap -Task Test
+  artifacts:
+    when: always
+    paths:
+      - output/testResults.xml   # NUnit format
+    expire_in: 1 week
+
+package:
+  extends: .windows
+  stage: test
+  script:
+    - powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Task Package
+  artifacts:
+    paths:
+      - output/*.zip
+    expire_in: 1 month
+
+publish:
+  extends: .windows
+  stage: release
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
+  script:
+    - powershell -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Bootstrap -Task Publish

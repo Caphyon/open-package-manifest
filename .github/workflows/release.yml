@@ -1,0 +1,36 @@
+name: Release
+
+# Publish to the PowerShell Gallery and attach the zip to a GitHub Release when a
+# version tag (e.g. v1.0.0) is pushed. Set the PSGALLERY_API_KEY repository secret.
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + Publish
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build (lint + test + package)
+        shell: pwsh
+        run: ./build.ps1 -Bootstrap -Task All
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+        run: ./build.ps1 -Task Publish
+
+      - name: Attach package to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: output/*.zip
+          generate_release_notes: true

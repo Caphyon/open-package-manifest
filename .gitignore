@@ -1,0 +1,19 @@
+# Build output
+output/
+*.zip
+*.nupkg
+testResults.xml
+coverage.xml
+
+# PowerShell / module dev
+*.ps1xml.bak
+
+# Editors / IDEs
+.vs/
+.vscode/
+*.suo
+*.user
+
+# OS cruft
+.DS_Store
+Thumbs.db

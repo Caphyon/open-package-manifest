@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FRAGMENT Version="23.8">
+  <ITEM AppId="{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}" Name="Minimal" Vendor="" Description="" IconPath="" WinGetAppScannedAt="0" Unseen="false" OperatingSys="" OperatingSysArchitecture="" DetectionRuleFormat="" DetectionRuleType="" DetectionRuleMsiValue="" DetectionMethodScript="" DetectionRuleFilePath="" DetectionRuleFileName="" DetectionRuleRegKey="" DetectionRuleRegValue="" DetectionRuleFileDetectionType="" DetectionRuleFileOperator="" DetectionRuleFileValue="" DetectionRuleRegDetectionType="" DetectionRuleRegOperator="" DetectionRuleRegDetectionValue="">
+    <COLLECTION Name="Packages">
+    </COLLECTION>
+    <COLLECTION Name="IntuneAssignments">
+    </COLLECTION>
+  </ITEM>
+</FRAGMENT>

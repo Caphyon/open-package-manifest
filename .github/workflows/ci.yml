@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Lint + Test (${{ matrix.shell }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows PowerShell 5.1 (Desktop) and PowerShell 7+ (Core).
+        shell: [ powershell, pwsh ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint + Test + Package
+        shell: ${{ matrix.shell }}
+        run: ./build.ps1 -Bootstrap -Task All
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testResults-${{ matrix.shell }}
+          path: output/testResults.xml
+          if-no-files-found: ignore
+
+      - name: Upload module package
+        if: matrix.shell == 'pwsh'
+        uses: actions/upload-artifact@v4
+        with:
+          name: PacKit-module
+          path: output/*.zip
+          if-no-files-found: error

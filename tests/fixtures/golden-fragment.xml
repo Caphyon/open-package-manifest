@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FRAGMENT Version="23.8">
+  <ITEM AppId="{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}" Name="Acme &amp; Co &quot;Reader&quot; &lt;v1&gt; &apos;X&apos;" Vendor="Acme Corporation" Description="Reads PDFs" IconPath="icons\app.png" WinGetAppScannedAt="0" Unseen="false" OperatingSys="Windows" OperatingSysArchitecture="x64" DetectionRuleFormat="" DetectionRuleType="" DetectionRuleMsiValue="" DetectionMethodScript="" DetectionRuleFilePath="" DetectionRuleFileName="" DetectionRuleRegKey="" DetectionRuleRegValue="" DetectionRuleFileDetectionType="" DetectionRuleFileOperator="" DetectionRuleFileValue="" DetectionRuleRegDetectionType="" DetectionRuleRegOperator="" DetectionRuleRegDetectionValue="">
+    <COLLECTION Name="Packages">
+      <ITEM PackageId="{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}" PackageIntuneId="" CatalogPackageId="" CatalogUpdateCheckedAt="0" CatalogUpdateAvailable="false" InstallCmdLine="/qn" UninstallCmdLine="" Path="app.msi" SourceFolder="" Type="msi" Version="1.0.0" ProductCode="" PackageArchitecture="" IntuneDeployTime="" IntuneEncryptionKey="" IntuneEncryptionIV="">
+        <COLLECTION Name="WinGetScanResults">
+          <ITEM WinGetCatalogPackageId="Acme.Reader" WinGetMatchScore="0.950000" WinGetAppVendor="Acme"/>
+        </COLLECTION>
+      </ITEM>
+    </COLLECTION>
+    <COLLECTION Name="IntuneAssignments">
+      <ITEM MsEntraGroupId="{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}" AssignmentType="Required" InclusionType="Include"/>
+    </COLLECTION>
+  </ITEM>
+</FRAGMENT>
