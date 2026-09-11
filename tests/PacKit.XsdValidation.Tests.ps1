@@ -78,6 +78,10 @@ Describe 'PacKit fragments vs PackitModuleFragment.xsd' {
         $target = Join-Path $script:work 'full.xml'
         Export-PacKitApplicationFragment -Fragment $app -LiteralPath $target | Out-Null
 
+        $fullXml = Get-Content -LiteralPath $target -Raw
+        $fullXml | Should -Match 'ReturnCodesJson="\[0,3010\]"'
+        $fullXml | Should -Match 'ScopeTagId="1"'
+
         $messages = Test-XmlAgainstXsd -XmlPath $target -XsdPath $script:xsdPath
         $messages | Should -BeNullOrEmpty -Because ($messages -join '; ')
     }
@@ -115,5 +119,44 @@ Describe 'PacKit fragments vs PackitModuleFragment.xsd' {
 
         $messages = Test-XmlAgainstXsd -XmlPath $target -XsdPath $script:xsdPath
         $messages | Should -Not -BeNullOrEmpty
+    }
+
+    It 'rejects duplicate app collection names' {
+        $app = New-PacKitApplicationFragment -Name 'Dup Collections'
+        $target = Join-Path $script:work 'dup-collections.xml'
+        Export-PacKitApplicationFragment -Fragment $app -LiteralPath $target | Out-Null
+
+        (Get-Content -LiteralPath $target -Raw) -replace 'Name="IntuneAssignments"', 'Name="Packages"' |
+            Set-Content -LiteralPath $target -NoNewline
+
+        $messages = Test-XmlAgainstXsd -XmlPath $target -XsdPath $script:xsdPath
+        $messages | Should -Not -BeNullOrEmpty
+    }
+
+    It 'rejects assignment items that are shaped like packages' {
+        $app = New-PacKitApplicationFragment -Name 'Wrong Assignment Shape'
+        Add-PacKitAssignment -Fragment $app -MsEntraGroupId ([guid]::NewGuid().ToString()) -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+        $target = Join-Path $script:work 'bad-assignment-shape.xml'
+        Export-PacKitApplicationFragment -Fragment $app -LiteralPath $target | Out-Null
+
+        (Get-Content -LiteralPath $target -Raw) `
+            -replace 'MsEntraGroupId="\{[^"]+\}"', 'PackageId="{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}"' `
+            -replace 'AssignmentType="[^"]*"', '' `
+            -replace 'InclusionType="[^"]*"', '' |
+            Set-Content -LiteralPath $target -NoNewline
+
+        { Import-PacKitApplicationFragment -LiteralPath $target } | Should -Throw
+    }
+
+    It 'rejects package items missing package identity fields' {
+        $app = New-PacKitApplicationFragment -Name 'Missing Package Fields'
+        Add-PacKitPackage -Fragment $app -Path 'app.msi' | Out-Null
+        $target = Join-Path $script:work 'bad-package-shape.xml'
+        Export-PacKitApplicationFragment -Fragment $app -LiteralPath $target | Out-Null
+
+        (Get-Content -LiteralPath $target -Raw) -replace '\sPackageId="\{[^"]+\}"', '' |
+            Set-Content -LiteralPath $target -NoNewline
+
+        { Import-PacKitApplicationFragment -LiteralPath $target } | Should -Throw
     }
 }

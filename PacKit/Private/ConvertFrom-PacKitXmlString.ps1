@@ -79,6 +79,20 @@ function Set-PacKitObjectFromXmlItem {
     }
 }
 
+function Assert-PacKitXmlItemHasAttributes {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)] $XmlItem,
+        [Parameter(Mandatory)] [string[]] $AttributeNames,
+        [Parameter(Mandatory)] [string] $Context
+    )
+    foreach ($name in $AttributeNames) {
+        if (-not $XmlItem.HasAttribute($name)) {
+            throw "$Context is missing required attribute '$name'."
+        }
+    }
+}
+
 # Map a single app <ITEM> element into a PacKit.ApplicationFragment.
 function ConvertFrom-PacKitAppItem {
     [CmdletBinding()]
@@ -89,16 +103,31 @@ function ConvertFrom-PacKitAppItem {
     $app = New-PacKitApplicationFragmentObject
     Set-PacKitObjectFromXmlItem -Object $app -XmlItem $XmlItem -Descriptors $schema.App
 
+    $appCollections = @($XmlItem.SelectNodes('COLLECTION'))
+    if ($appCollections.Count -ne 2) {
+        throw "PacKit fragment must contain exactly two app collections (Packages and IntuneAssignments), found $($appCollections.Count)."
+    }
+    $packagesCollectionCount = @($appCollections | Where-Object { $_.GetAttribute('Name') -eq 'Packages' }).Count
+    $assignmentsCollectionCount = @($appCollections | Where-Object { $_.GetAttribute('Name') -eq 'IntuneAssignments' }).Count
+    if (($packagesCollectionCount -ne 1) -or ($assignmentsCollectionCount -ne 1)) {
+        throw 'PacKit fragment must contain exactly one Packages collection and one IntuneAssignments collection.'
+    }
+
     # Packages
     $packages = @()
     $packagesNode = $XmlItem.SelectSingleNode("COLLECTION[@Name='Packages']")
     if ($packagesNode) {
         foreach ($pkgItem in $packagesNode.SelectNodes('ITEM')) {
+            Assert-PacKitXmlItemHasAttributes -XmlItem $pkgItem -AttributeNames @('PackageId') -Context 'Packages ITEM'
             $pkg = New-PacKitPackageObject
             Set-PacKitObjectFromXmlItem -Object $pkg -XmlItem $pkgItem -Descriptors $schema.Package
 
             $scans = @()
             $scanNode = $pkgItem.SelectSingleNode("COLLECTION[@Name='WinGetScanResults']")
+            $invalidPkgChildCollections = @($pkgItem.SelectNodes("COLLECTION[not(@Name='WinGetScanResults')]"))
+            if ($invalidPkgChildCollections.Count -gt 0) {
+                throw "Packages ITEM contains unsupported child collection '$($invalidPkgChildCollections[0].GetAttribute('Name'))'."
+            }
             if ($scanNode) {
                 foreach ($scanItem in $scanNode.SelectNodes('ITEM')) {
                     $scan = New-PacKitWinGetScanResultObject
@@ -117,6 +146,10 @@ function ConvertFrom-PacKitAppItem {
     $assignmentsNode = $XmlItem.SelectSingleNode("COLLECTION[@Name='IntuneAssignments']")
     if ($assignmentsNode) {
         foreach ($asgItem in $assignmentsNode.SelectNodes('ITEM')) {
+            Assert-PacKitXmlItemHasAttributes -XmlItem $asgItem -AttributeNames @('MsEntraGroupId', 'AssignmentType', 'InclusionType') -Context 'IntuneAssignments ITEM'
+            if (@($asgItem.SelectNodes('COLLECTION')).Count -gt 0) {
+                throw 'IntuneAssignments ITEM must not contain child collections.'
+            }
             $asg = New-PacKitAssignmentObject
             Set-PacKitObjectFromXmlItem -Object $asg -XmlItem $asgItem -Descriptors $schema.Assignment
             $assignments += $asg

@@ -157,7 +157,7 @@ function Invoke-Package {
     # Runtime module files only (no tests/examples/build tooling).
     Copy-Item -LiteralPath $ManifestPath -Destination $StagePath
     Copy-Item -LiteralPath (Join-Path $ModuleRoot "$ModuleName.psm1") -Destination $StagePath
-    foreach ($dir in @('Public', 'Private')) {
+    foreach ($dir in @('Public', 'Private', 'Schema')) {
         Copy-Item -LiteralPath (Join-Path $ModuleRoot $dir) -Destination $StagePath -Recurse
     }
     # Ship license + docs alongside the module.

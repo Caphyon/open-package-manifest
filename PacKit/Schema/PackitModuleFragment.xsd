@@ -35,7 +35,12 @@
   <xs:element name="FRAGMENT">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="ITEM" type="PacKitAppItemType"/>
+        <xs:element name="ITEM" type="PacKitAppItemType">
+          <xs:unique name="UniqueCollectionName">
+            <xs:selector xpath="COLLECTION"/>
+            <xs:field xpath="@Name"/>
+          </xs:unique>
+        </xs:element>
       </xs:sequence>
       <xs:attribute name="Version" type="xs:string" fixed="23.8" use="required"/>
     </xs:complexType>
@@ -48,7 +53,13 @@
     </xs:sequence>
 
     <xs:attribute name="AppId" type="PacKitGuidType" use="required"/>
-    <xs:attribute name="Name" type="xs:string" use="required"/>
+    <xs:attribute name="Name" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
     <xs:attribute name="Vendor" type="xs:string" use="required"/>
     <xs:attribute name="Description" type="xs:string" use="required"/>
     <xs:attribute name="IconPath" type="xs:string" use="required"/>
