@@ -25,6 +25,8 @@ function Set-PacKitApplication {
         [Parameter()] [string] $OperatingSysArchitecture,
         [Parameter()] [long]   $WinGetAppScannedAt,
         [Parameter()] [bool]   $Unseen,
+        [Parameter()] [string] $ReturnCodesJson,
+        [Parameter()] [string] $ScopeTagId,
 
         [Parameter()] [switch] $PassThru
     )
@@ -35,7 +37,7 @@ function Set-PacKitApplication {
         }
 
         foreach ($prop in @('Name', 'Vendor', 'Description', 'IconPath', 'OperatingSys',
-                'OperatingSysArchitecture', 'WinGetAppScannedAt', 'Unseen')) {
+                'OperatingSysArchitecture', 'WinGetAppScannedAt', 'Unseen', 'ReturnCodesJson', 'ScopeTagId')) {
             if ($PSBoundParameters.ContainsKey($prop)) {
                 $Fragment.$prop = $PSBoundParameters[$prop]
             }

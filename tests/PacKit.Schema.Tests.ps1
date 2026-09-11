@@ -14,11 +14,11 @@ AfterAll {
 
 Describe 'PacKitSchema' {
 
-    It 'app attribute order matches the contract (23 attributes)' {
+    It 'app attribute order matches the contract (25 attributes)' {
         $names = InModuleScope PacKit { (Get-PacKitSchema).App | ForEach-Object { $_.Name } }
         $names | Should -Be @(
             'AppId', 'Name', 'Vendor', 'Description', 'IconPath', 'WinGetAppScannedAt', 'Unseen',
-            'OperatingSys', 'OperatingSysArchitecture',
+            'OperatingSys', 'OperatingSysArchitecture', 'ReturnCodesJson', 'ScopeTagId',
             'DetectionRuleFormat', 'DetectionRuleType', 'DetectionRuleMsiValue', 'DetectionMethodScript',
             'DetectionRuleFilePath', 'DetectionRuleFileName', 'DetectionRuleRegKey', 'DetectionRuleRegValue',
             'DetectionRuleFileDetectionType', 'DetectionRuleFileOperator', 'DetectionRuleFileValue',

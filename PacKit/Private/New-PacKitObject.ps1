@@ -116,6 +116,8 @@ function New-PacKitApplicationFragmentObject {
         Unseen                   = $false
         OperatingSys             = ''
         OperatingSysArchitecture = ''
+        ReturnCodesJson          = ''
+        ScopeTagId               = ''
         DetectionRule            = (New-PacKitDetectionRuleObject)
         Packages                 = @()
         IntuneAssignments        = @()
