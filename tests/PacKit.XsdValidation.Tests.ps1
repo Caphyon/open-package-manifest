@@ -24,7 +24,8 @@ BeforeAll {
         $settings = New-Object System.Xml.XmlReaderSettings
         [void]$settings.Schemas.Add($null, $XsdPath)
         $settings.ValidationType = [System.Xml.ValidationType]::Schema
-        $settings.add_ValidationEventHandler({ param($s, $e) $messages.Add($e.Message) }.GetNewClosure())
+        # ValidationEventHandler invokes with (sender, args); read both via $args to avoid an unused param.
+        $settings.add_ValidationEventHandler({ $messages.Add($args[1].Message) }.GetNewClosure())
 
         $reader = [System.Xml.XmlReader]::Create($XmlPath, $settings)
         try {
