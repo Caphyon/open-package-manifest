@@ -34,6 +34,8 @@ function Get-PacKitSchema {
         @{ Name = 'Unseen';                          Path = 'Unseen';                          Type = 'Bool';   Default = $false }
         @{ Name = 'OperatingSys';                    Path = 'OperatingSys';                    Type = 'String'; Default = '' }
         @{ Name = 'OperatingSysArchitecture';        Path = 'OperatingSysArchitecture';        Type = 'String'; Default = '' }
+        @{ Name = 'ReturnCodesJson';                 Path = 'ReturnCodesJson';                 Type = 'String'; Default = '' }
+        @{ Name = 'ScopeTagId';                      Path = 'ScopeTagId';                      Type = 'String'; Default = '' }
         @{ Name = 'DetectionRuleFormat';             Path = 'DetectionRule.Format';            Type = 'String'; Default = '' }
         @{ Name = 'DetectionRuleType';               Path = 'DetectionRule.Type';              Type = 'String'; Default = '' }
         @{ Name = 'DetectionRuleMsiValue';           Path = 'DetectionRule.MsiValue';          Type = 'String'; Default = '' }
