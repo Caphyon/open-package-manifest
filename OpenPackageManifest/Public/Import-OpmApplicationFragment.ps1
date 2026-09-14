@@ -14,11 +14,23 @@
                                       PacKit's own fragment discovery.
     -LiteralPath <file>           -> reads exactly that file.
 
+  Path-bearing attributes (IconPath, DetectionRule.ScriptPath, package Path and
+  SourceFolder) are stored on disk relative to the .packit folder and are
+  returned verbatim by default, so a load->save round-trip stays byte-identical.
+  Pass -ResolvePaths to resolve any relative values to full, absolute paths
+  (anchored at the .packit folder) on the returned object - useful when you need
+  to consume the paths directly (e.g. to read the referenced installer file)
+  rather than re-export the fragment.
+
 .EXAMPLE
   $app = Import-OpmApplicationFragment -SourceFolder 'C:\src\Acme'
 
 .EXAMPLE
   Import-OpmApplicationFragment -LiteralPath '.\out\app.xml'
+
+.EXAMPLE
+  $app = Import-OpmApplicationFragment -SourceFolder 'C:\src\Acme' -ResolvePaths
+  $app.Packages[0].Path # full, absolute path to the installer
 #>
 function Import-OpmApplicationFragment {
     [CmdletBinding(DefaultParameterSetName = 'BySourceFolder')]
@@ -33,7 +45,10 @@ function Import-OpmApplicationFragment {
 
         [Parameter(Mandatory, ParameterSetName = 'ByLiteralPath')]
         [ValidateNotNullOrEmpty()]
-        [string] $LiteralPath
+        [string] $LiteralPath,
+
+        [Parameter()]
+        [switch] $ResolvePaths
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'BySourceFolder') {
@@ -66,5 +81,17 @@ function Import-OpmApplicationFragment {
     }
 
     $text = [System.IO.File]::ReadAllText($file)
-    return ConvertFrom-OpmXmlString -Xml $text
+    $app = ConvertFrom-OpmXmlString -Xml $text
+
+    if ($ResolvePaths) {
+        $baseDir = [System.IO.Path]::GetDirectoryName([System.IO.Path]::GetFullPath($file))
+        $app.IconPath = Get-OpmAbsolutePath -BaseDirectory $baseDir -Path $app.IconPath
+        $app.DetectionRule.ScriptPath = Get-OpmAbsolutePath -BaseDirectory $baseDir -Path $app.DetectionRule.ScriptPath
+        foreach ($pkg in @($app.Packages)) {
+            $pkg.Path = Get-OpmAbsolutePath -BaseDirectory $baseDir -Path $pkg.Path
+            $pkg.SourceFolder = Get-OpmAbsolutePath -BaseDirectory $baseDir -Path $pkg.SourceFolder
+        }
+    }
+
+    return $app
 }

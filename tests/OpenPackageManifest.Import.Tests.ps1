@@ -63,4 +63,20 @@ Describe 'Import-OpmApplicationFragment' {
     It 'throws when the literal file is missing' {
         { Import-OpmApplicationFragment -LiteralPath (Join-Path $script:work 'missing.xml') } | Should -Throw
     }
+
+    It 'returns relative package paths verbatim by default' {
+        $app = Import-OpmApplicationFragment -SourceFolder $script:work -AppId $script:appId
+        $app.Packages[0].Path | Should -BeExactly 'app.msi'
+    }
+
+    It 'resolves relative package paths to full paths with -ResolvePaths' {
+        $app = Import-OpmApplicationFragment -SourceFolder $script:work -AppId $script:appId -ResolvePaths
+        $app.Packages[0].Path | Should -BeExactly (Join-Path $script:opmFolder 'app.msi')
+        [System.IO.Path]::IsPathRooted($app.Packages[0].Path) | Should -BeTrue
+    }
+
+    It 'leaves already-absolute paths untouched with -ResolvePaths' {
+        $app = Import-OpmApplicationFragment -LiteralPath $script:goldenFragmentPath -ResolvePaths
+        $app.Packages[0].SourceFolder | Should -BeExactly ''
+    }
 }
