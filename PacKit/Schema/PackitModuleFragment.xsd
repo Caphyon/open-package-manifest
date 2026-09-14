@@ -32,6 +32,91 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- Intune Win32 app "Minimum operating system architecture" (win32LobApp.applicableArchitectures). -->
+  <xs:simpleType name="PacKitOperatingSysArchitectureType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="x86"/>
+      <xs:enumeration value="x64"/>
+      <xs:enumeration value="arm"/>
+      <xs:enumeration value="arm64"/>
+      <xs:enumeration value="neutral"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Intune Win32 app detection-rule "format" choice. -->
+  <xs:simpleType name="PacKitDetectionRuleFormatType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="Manually configure detection rules"/>
+      <xs:enumeration value="Use a custom detection script"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Intune Win32 app detection-rule "rule type" choice. -->
+  <xs:simpleType name="PacKitDetectionRuleTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="MSI"/>
+      <xs:enumeration value="File"/>
+      <xs:enumeration value="Registry"/>
+      <xs:enumeration value="PowerShell"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Intune Win32 app File detection-rule "detection method" choice. -->
+  <xs:simpleType name="PacKitFileDetectionTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="File or folder exists"/>
+      <xs:enumeration value="Date modified"/>
+      <xs:enumeration value="Date created"/>
+      <xs:enumeration value="String (version)"/>
+      <xs:enumeration value="Size in MB"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Intune Win32 app Registry detection-rule "detection method" choice. -->
+  <xs:simpleType name="PacKitRegDetectionTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="Key or value exists"/>
+      <xs:enumeration value="Key or value does not exist"/>
+      <xs:enumeration value="String comparison"/>
+      <xs:enumeration value="Version comparison"/>
+      <xs:enumeration value="Integer comparison"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Intune Win32 app detection-rule comparison operator, shared by File and Registry rules. -->
+  <xs:simpleType name="PacKitDetectionOperatorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="Not configured"/>
+      <xs:enumeration value="Equal"/>
+      <xs:enumeration value="Not equal"/>
+      <xs:enumeration value="Greater than"/>
+      <xs:enumeration value="Greater than or equal"/>
+      <xs:enumeration value="Less than"/>
+      <xs:enumeration value="Less than or equal"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Package Type: lowercase extension, per Get-PacKitSchema.PackageTypes; "" when not yet derivable. -->
+  <xs:simpleType name="PacKitPackageTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value=""/>
+      <xs:enumeration value="msi"/>
+      <xs:enumeration value="exe"/>
+      <xs:enumeration value="msix"/>
+      <xs:enumeration value="msixbundle"/>
+      <xs:enumeration value="appx"/>
+      <xs:enumeration value="appxbundle"/>
+      <xs:enumeration value="ps1"/>
+      <xs:enumeration value="vbs"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:element name="FRAGMENT">
     <xs:complexType>
       <xs:sequence>
@@ -65,25 +150,25 @@
     <xs:attribute name="IconPath" type="xs:string" use="required"/>
     <xs:attribute name="WinGetAppScannedAt" type="PacKitTimeTType" use="required"/>
     <xs:attribute name="Unseen" type="PacKitBoolType" use="required"/>
+    <!-- OperatingSys has no confirmed real-world value set; left free-form. -->
     <xs:attribute name="OperatingSys" type="xs:string" use="required"/>
-    <xs:attribute name="OperatingSysArchitecture" type="xs:string" use="required"/>
+    <xs:attribute name="OperatingSysArchitecture" type="PacKitOperatingSysArchitectureType" use="required"/>
     <xs:attribute name="ReturnCodesJson" type="xs:string" use="required"/>
     <xs:attribute name="ScopeTagId" type="xs:string" use="required"/>
 
-    <!-- DetectionRule.* attributes are free-form strings; see file-level comment. -->
-    <xs:attribute name="DetectionRuleFormat" type="xs:string" use="required"/>
-    <xs:attribute name="DetectionRuleType" type="xs:string" use="required"/>
+    <xs:attribute name="DetectionRuleFormat" type="PacKitDetectionRuleFormatType" use="required"/>
+    <xs:attribute name="DetectionRuleType" type="PacKitDetectionRuleTypeType" use="required"/>
     <xs:attribute name="DetectionRuleMsiValue" type="xs:string" use="required"/>
     <xs:attribute name="DetectionMethodScript" type="xs:string" use="required"/>
     <xs:attribute name="DetectionRuleFilePath" type="xs:string" use="required"/>
     <xs:attribute name="DetectionRuleFileName" type="xs:string" use="required"/>
     <xs:attribute name="DetectionRuleRegKey" type="xs:string" use="required"/>
     <xs:attribute name="DetectionRuleRegValue" type="xs:string" use="required"/>
-    <xs:attribute name="DetectionRuleFileDetectionType" type="xs:string" use="required"/>
-    <xs:attribute name="DetectionRuleFileOperator" type="xs:string" use="required"/>
+    <xs:attribute name="DetectionRuleFileDetectionType" type="PacKitFileDetectionTypeType" use="required"/>
+    <xs:attribute name="DetectionRuleFileOperator" type="PacKitDetectionOperatorType" use="required"/>
     <xs:attribute name="DetectionRuleFileValue" type="xs:string" use="required"/>
-    <xs:attribute name="DetectionRuleRegDetectionType" type="xs:string" use="required"/>
-    <xs:attribute name="DetectionRuleRegOperator" type="xs:string" use="required"/>
+    <xs:attribute name="DetectionRuleRegDetectionType" type="PacKitRegDetectionTypeType" use="required"/>
+    <xs:attribute name="DetectionRuleRegOperator" type="PacKitDetectionOperatorType" use="required"/>
     <xs:attribute name="DetectionRuleRegDetectionValue" type="xs:string" use="required"/>
   </xs:complexType>
 
@@ -117,15 +202,16 @@
     <xs:attribute name="UninstallCmdLine" type="xs:string"/>
     <xs:attribute name="Path" type="xs:string"/>
     <xs:attribute name="SourceFolder" type="xs:string"/>
-    <xs:attribute name="Type" type="xs:string"/>
+    <xs:attribute name="Type" type="PacKitPackageTypeType"/>
     <xs:attribute name="Version" type="xs:string"/>
     <xs:attribute name="ProductCode" type="xs:string"/>
+    <!-- PackageArchitecture has no confirmed real-world value set; left free-form. -->
     <xs:attribute name="PackageArchitecture" type="xs:string"/>
     <xs:attribute name="IntuneDeployTime" type="xs:string"/>
     <xs:attribute name="IntuneEncryptionKey" type="xs:string"/>
     <xs:attribute name="IntuneEncryptionIV" type="xs:string"/>
 
-    <!-- IntuneAssignments ITEM attributes -->
+    <!-- IntuneAssignments ITEM attributes; AssignmentType/InclusionType have no confirmed real-world value set, left free-form. -->
     <xs:attribute name="MsEntraGroupId" type="PacKitGuidType"/>
     <xs:attribute name="AssignmentType" type="xs:string"/>
     <xs:attribute name="InclusionType" type="xs:string"/>
