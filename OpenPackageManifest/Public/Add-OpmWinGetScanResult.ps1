@@ -9,9 +9,9 @@
   (e.g. 0.95 -> "0.950000"), matching PacKit.
 
 .EXAMPLE
-  Add-PacKitWinGetScanResult -Fragment $app -PackageId '{1B2C...}' -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme'
+  Add-OpmWinGetScanResult -Fragment $app -PackageId '{1B2C...}' -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme'
 #>
-function Add-PacKitWinGetScanResult {
+function Add-OpmWinGetScanResult {
     [CmdletBinding()]
     [OutputType('PacKit.WinGetScanResult')]
     param(
@@ -30,13 +30,13 @@ function Add-PacKitWinGetScanResult {
     )
 
     process {
-        $target = ConvertTo-PacKitCanonicalGuid -Value $PackageId
+        $target = ConvertTo-OpmCanonicalGuid -Value $PackageId
         $pkg = @($Fragment.Packages) | Where-Object { $_.PackageId -eq $target } | Select-Object -First 1
         if ($null -eq $pkg) {
             throw "No package with PackageId '$PackageId' was found on the fragment."
         }
 
-        $scan = New-PacKitWinGetScanResultObject
+        $scan = New-OpmWinGetScanResultObject
         $scan.CatalogPackageId = $CatalogPackageId
         $scan.MatchScore = $MatchScore
         $scan.Vendor = $Vendor

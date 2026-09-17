@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-  PacKit application-fragment authoring module (root module loader).
+  OpenPackageManifest application-fragment authoring module (root module loader).
 .DESCRIPTION
   Dot-sources every Private then Public script and exports the Public functions.
   Public/Private files are auto-discovered, so adding a new cmdlet file requires
-  no edit here. The manifest (PacKit.psd1) controls the externally visible surface.
+  no edit here. The manifest (OpenPackageManifest.psd1) controls the externally visible surface.
 #>
 
 Set-StrictMode -Version Latest
@@ -18,7 +18,7 @@ foreach ($file in @($privateFiles + $publicFiles)) {
         . $file.FullName
     }
     catch {
-        throw "PacKit: failed to import '$($file.FullName)': $($_.Exception.Message)"
+        throw "OpenPackageManifest: failed to import '$($file.FullName)': $($_.Exception.Message)"
     }
 }
 

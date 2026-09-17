@@ -8,15 +8,15 @@
   (PacKit-compatible) unless one is supplied, in which case it is validated and
   normalised to the braced UPPERCASE form. Packages, the detection rule and
   Intune assignments start empty; add them with the Add-PacKit* / Set-PacKit*
-  cmdlets, then persist with Export-PacKitApplicationFragment.
+  cmdlets, then persist with Export-OpmApplicationFragment.
 
 .EXAMPLE
-  $app = New-PacKitApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation'
+  $app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation'
 
 .EXAMPLE
-  New-PacKitApplicationFragment -Name 'Reader' -AppId '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
+  New-OpmApplicationFragment -Name 'Reader' -AppId '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
 #>
-function New-PacKitApplicationFragment {
+function New-OpmApplicationFragment {
     [CmdletBinding()]
     [OutputType('PacKit.ApplicationFragment')]
     param(
@@ -51,10 +51,10 @@ function New-PacKitApplicationFragment {
         $AppId = $parsed.ToString('B').ToUpperInvariant()
     }
     else {
-        $AppId = New-PacKitGuid
+        $AppId = New-OpmGuid
     }
 
-    $app = New-PacKitApplicationFragmentObject
+    $app = New-OpmApplicationFragmentObject
     $app.AppId = $AppId
     $app.Name = $Name
     $app.Vendor = $Vendor

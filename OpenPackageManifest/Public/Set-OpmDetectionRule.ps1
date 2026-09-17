@@ -8,12 +8,12 @@
   parameters are changed. Use -PassThru to emit the fragment for chaining.
 
 .EXAMPLE
-  Set-PacKitDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
+  Set-OpmDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
 
 .EXAMPLE
-  Set-PacKitDetectionRule -Fragment $app -Type 'File' -FilePath 'C:\Program Files\Acme' -FileName 'acme.exe'
+  Set-OpmDetectionRule -Fragment $app -Type 'File' -FilePath 'C:\Program Files\Acme' -FileName 'acme.exe'
 #>
-function Set-PacKitDetectionRule {
+function Set-OpmDetectionRule {
     [CmdletBinding()]
     [OutputType('PacKit.ApplicationFragment')]
     param(

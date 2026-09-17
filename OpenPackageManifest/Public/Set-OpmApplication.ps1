@@ -8,9 +8,9 @@
   chaining.
 
 .EXAMPLE
-  Set-PacKitApplication -Fragment $app -Vendor 'Acme Corporation' -OperatingSysArchitecture 'x64'
+  Set-OpmApplication -Fragment $app -Vendor 'Acme Corporation' -OperatingSysArchitecture 'x64'
 #>
-function Set-PacKitApplication {
+function Set-OpmApplication {
     [CmdletBinding()]
     [OutputType('PacKit.ApplicationFragment')]
     param(

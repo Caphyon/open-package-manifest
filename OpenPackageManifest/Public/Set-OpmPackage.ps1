@@ -5,12 +5,12 @@
 .DESCRIPTION
   Modifies the package whose PackageId matches. Only supplied parameters are
   changed. If -Path is supplied and -Type is not, the package Type is re-derived
-  from the new path's lowercase extension (matching Add-PacKitPackage).
+  from the new path's lowercase extension (matching Add-OpmPackage).
 
 .EXAMPLE
-  Set-PacKitPackage -Fragment $app -PackageId '{1B2C...}' -Version '2.0.0' -InstallCmdLine '/quiet'
+  Set-OpmPackage -Fragment $app -PackageId '{1B2C...}' -Version '2.0.0' -InstallCmdLine '/quiet'
 #>
-function Set-PacKitPackage {
+function Set-OpmPackage {
     [CmdletBinding()]
     [OutputType('PacKit.Package')]
     param(
@@ -35,7 +35,7 @@ function Set-PacKitPackage {
     )
 
     process {
-        $target = ConvertTo-PacKitCanonicalGuid -Value $PackageId
+        $target = ConvertTo-OpmCanonicalGuid -Value $PackageId
         $pkg = @($Fragment.Packages) | Where-Object { $_.PackageId -eq $target } | Select-Object -First 1
         if ($null -eq $pkg) {
             throw "No package with PackageId '$PackageId' was found on the fragment."

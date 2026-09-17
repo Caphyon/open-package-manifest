@@ -18,7 +18,7 @@
   (WorkspaceApps::Serialize / Deserialize) and RepackagerTraits.h.
 #>
 
-function Get-PacKitSchema {
+function Get-OpmSchema {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param()
@@ -90,8 +90,8 @@ function Get-PacKitSchema {
         # FRAGMENT/PROJECT Version attribute value (VersionData::kVersion = APP_VERSION).
         FragmentVersion  = '23.8'
 
-        # .packit folder + its managed subfolders (PackitPaths.h:45-54).
-        PackitFolderName = '.packit'
+        # .opm folder + its managed subfolders (PackitPaths.h:45-54).
+        OpmFolderName    = '.opm'
         Subfolders       = @('icons', 'detection-scripts', 'psadt', 'intunewin', 'mecm', 'downloads', 'temp')
 
         # Recognised package types = lowercase file extension of the package Path

@@ -3,7 +3,7 @@
   Parse a PacKit application-fragment XML string into typed objects.
 
 .DESCRIPTION
-  The inverse of ConvertTo-PacKitXmlString. Loads the fragment with
+  The inverse of ConvertTo-OpmXmlString. Loads the fragment with
   System.Xml.XmlDocument (which, like PacKit's Expat reader, accepts any
   well-formed XML and auto-unescapes attribute values), then maps it back onto
   the PacKit object model using the same schema that drives emission. Attribute
@@ -15,7 +15,7 @@
 #>
 
 # Convert an on-disk attribute string to its typed value per schema Type.
-function ConvertFrom-PacKitAttributeText {
+function ConvertFrom-OpmAttributeText {
     [CmdletBinding()]
     param(
         [Parameter()] [AllowEmptyString()] [AllowNull()] [string] $Value,
@@ -48,7 +48,7 @@ function ConvertFrom-PacKitAttributeText {
 }
 
 # Assign a value to a dotted property path (e.g. 'DetectionRule.Format').
-function Set-PacKitValueByPath {
+function Set-OpmValueByPath {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $Object,
@@ -64,7 +64,7 @@ function Set-PacKitValueByPath {
 }
 
 # Populate $Object from $XmlItem's attributes using the supplied schema descriptors.
-function Set-PacKitObjectFromXmlItem {
+function Set-OpmObjectFromXmlItem {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $Object,
@@ -74,12 +74,12 @@ function Set-PacKitObjectFromXmlItem {
     foreach ($d in $Descriptors) {
         # GetAttribute returns '' for an absent attribute, which maps to the default.
         $raw = $XmlItem.GetAttribute($d.Name)
-        $typed = ConvertFrom-PacKitAttributeText -Value $raw -Type $d.Type
-        Set-PacKitValueByPath -Object $Object -Path $d.Path -Value $typed
+        $typed = ConvertFrom-OpmAttributeText -Value $raw -Type $d.Type
+        Set-OpmValueByPath -Object $Object -Path $d.Path -Value $typed
     }
 }
 
-function Assert-PacKitXmlItemHasAttributes {
+function Assert-OpmXmlItemHasAttributes {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $XmlItem,
@@ -94,14 +94,14 @@ function Assert-PacKitXmlItemHasAttributes {
 }
 
 # Map a single app <ITEM> element into a PacKit.ApplicationFragment.
-function ConvertFrom-PacKitAppItem {
+function ConvertFrom-OpmAppItem {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $XmlItem
     )
-    $schema = Get-PacKitSchema
-    $app = New-PacKitApplicationFragmentObject
-    Set-PacKitObjectFromXmlItem -Object $app -XmlItem $XmlItem -Descriptors $schema.App
+    $schema = Get-OpmSchema
+    $app = New-OpmApplicationFragmentObject
+    Set-OpmObjectFromXmlItem -Object $app -XmlItem $XmlItem -Descriptors $schema.App
 
     $appCollections = @($XmlItem.SelectNodes('COLLECTION'))
     if ($appCollections.Count -ne 2) {
@@ -118,9 +118,9 @@ function ConvertFrom-PacKitAppItem {
     $packagesNode = $XmlItem.SelectSingleNode("COLLECTION[@Name='Packages']")
     if ($packagesNode) {
         foreach ($pkgItem in $packagesNode.SelectNodes('ITEM')) {
-            Assert-PacKitXmlItemHasAttributes -XmlItem $pkgItem -AttributeNames @('PackageId') -Context 'Packages ITEM'
-            $pkg = New-PacKitPackageObject
-            Set-PacKitObjectFromXmlItem -Object $pkg -XmlItem $pkgItem -Descriptors $schema.Package
+            Assert-OpmXmlItemHasAttributes -XmlItem $pkgItem -AttributeNames @('PackageId') -Context 'Packages ITEM'
+            $pkg = New-OpmPackageObject
+            Set-OpmObjectFromXmlItem -Object $pkg -XmlItem $pkgItem -Descriptors $schema.Package
 
             $scans = @()
             $scanNode = $pkgItem.SelectSingleNode("COLLECTION[@Name='WinGetScanResults']")
@@ -130,8 +130,8 @@ function ConvertFrom-PacKitAppItem {
             }
             if ($scanNode) {
                 foreach ($scanItem in $scanNode.SelectNodes('ITEM')) {
-                    $scan = New-PacKitWinGetScanResultObject
-                    Set-PacKitObjectFromXmlItem -Object $scan -XmlItem $scanItem -Descriptors $schema.WinGetScanResult
+                    $scan = New-OpmWinGetScanResultObject
+                    Set-OpmObjectFromXmlItem -Object $scan -XmlItem $scanItem -Descriptors $schema.WinGetScanResult
                     $scans += $scan
                 }
             }
@@ -146,12 +146,12 @@ function ConvertFrom-PacKitAppItem {
     $assignmentsNode = $XmlItem.SelectSingleNode("COLLECTION[@Name='IntuneAssignments']")
     if ($assignmentsNode) {
         foreach ($asgItem in $assignmentsNode.SelectNodes('ITEM')) {
-            Assert-PacKitXmlItemHasAttributes -XmlItem $asgItem -AttributeNames @('MsEntraGroupId', 'AssignmentType', 'InclusionType') -Context 'IntuneAssignments ITEM'
+            Assert-OpmXmlItemHasAttributes -XmlItem $asgItem -AttributeNames @('MsEntraGroupId', 'AssignmentType', 'InclusionType') -Context 'IntuneAssignments ITEM'
             if (@($asgItem.SelectNodes('COLLECTION')).Count -gt 0) {
                 throw 'IntuneAssignments ITEM must not contain child collections.'
             }
-            $asg = New-PacKitAssignmentObject
-            Set-PacKitObjectFromXmlItem -Object $asg -XmlItem $asgItem -Descriptors $schema.Assignment
+            $asg = New-OpmAssignmentObject
+            Set-OpmObjectFromXmlItem -Object $asg -XmlItem $asgItem -Descriptors $schema.Assignment
             $assignments += $asg
         }
     }
@@ -160,7 +160,7 @@ function ConvertFrom-PacKitAppItem {
     return $app
 }
 
-function ConvertFrom-PacKitXmlString {
+function ConvertFrom-OpmXmlString {
     [CmdletBinding()]
     [OutputType('PacKit.ApplicationFragment')]
     param(
@@ -195,5 +195,5 @@ function ConvertFrom-PacKitXmlString {
         throw 'PacKit fragment <FRAGMENT> contains no <ITEM> element.'
     }
 
-    return ConvertFrom-PacKitAppItem -XmlItem $appItem
+    return ConvertFrom-OpmAppItem -XmlItem $appItem
 }

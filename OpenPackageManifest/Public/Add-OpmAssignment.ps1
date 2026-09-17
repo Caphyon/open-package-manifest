@@ -9,9 +9,9 @@
   'Exclude'. The fragment is modified in place.
 
 .EXAMPLE
-  Add-PacKitAssignment -Fragment $app -MsEntraGroupId '{2C3D...}' -AssignmentType 'Required' -InclusionType 'Include'
+  Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D...}' -AssignmentType 'Required' -InclusionType 'Include'
 #>
-function Add-PacKitAssignment {
+function Add-OpmAssignment {
     [CmdletBinding()]
     [OutputType('PacKit.Assignment')]
     param(
@@ -34,7 +34,7 @@ function Add-PacKitAssignment {
             throw "MsEntraGroupId '$MsEntraGroupId' is not a valid GUID. Entra group ids are GUIDs; provide one like {2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}."
         }
 
-        $asg = New-PacKitAssignmentObject
+        $asg = New-OpmAssignmentObject
         $asg.MsEntraGroupId = $parsed.ToString('B').ToUpperInvariant()
         $asg.AssignmentType = $AssignmentType
         $asg.InclusionType = $InclusionType

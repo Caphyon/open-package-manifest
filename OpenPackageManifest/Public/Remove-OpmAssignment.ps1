@@ -7,9 +7,9 @@
   IntuneAssignments collection. The fragment is modified in place.
 
 .EXAMPLE
-  Remove-PacKitAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
+  Remove-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
 #>
-function Remove-PacKitAssignment {
+function Remove-OpmAssignment {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -23,7 +23,7 @@ function Remove-PacKitAssignment {
     )
 
     process {
-        $target = ConvertTo-PacKitCanonicalGuid -Value $MsEntraGroupId
+        $target = ConvertTo-OpmCanonicalGuid -Value $MsEntraGroupId
         $before = @($Fragment.IntuneAssignments).Count
         $Fragment.IntuneAssignments = @($Fragment.IntuneAssignments | Where-Object { $_.MsEntraGroupId -ne $target })
         $after = @($Fragment.IntuneAssignments).Count

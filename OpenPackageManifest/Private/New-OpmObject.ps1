@@ -20,7 +20,7 @@
       ... .WinGetScanResults -> PacKit.WinGetScanResult[]
 #>
 
-function New-PacKitDetectionRuleObject {
+function New-OpmDetectionRuleObject {
     [CmdletBinding()]
     [OutputType('PacKit.DetectionRule')]
     param()
@@ -45,7 +45,7 @@ function New-PacKitDetectionRuleObject {
     return $obj
 }
 
-function New-PacKitWinGetScanResultObject {
+function New-OpmWinGetScanResultObject {
     [CmdletBinding()]
     [OutputType('PacKit.WinGetScanResult')]
     param()
@@ -59,7 +59,7 @@ function New-PacKitWinGetScanResultObject {
     return $obj
 }
 
-function New-PacKitAssignmentObject {
+function New-OpmAssignmentObject {
     [CmdletBinding()]
     [OutputType('PacKit.Assignment')]
     param()
@@ -73,7 +73,7 @@ function New-PacKitAssignmentObject {
     return $obj
 }
 
-function New-PacKitPackageObject {
+function New-OpmPackageObject {
     [CmdletBinding()]
     [OutputType('PacKit.Package')]
     param()
@@ -101,7 +101,7 @@ function New-PacKitPackageObject {
     return $obj
 }
 
-function New-PacKitApplicationFragmentObject {
+function New-OpmApplicationFragmentObject {
     [CmdletBinding()]
     [OutputType('PacKit.ApplicationFragment')]
     param()
@@ -118,7 +118,7 @@ function New-PacKitApplicationFragmentObject {
         OperatingSysArchitecture = ''
         ReturnCodesJson          = ''
         ScopeTagId               = ''
-        DetectionRule            = (New-PacKitDetectionRuleObject)
+        DetectionRule            = (New-OpmDetectionRuleObject)
         Packages                 = @()
         IntuneAssignments        = @()
     }

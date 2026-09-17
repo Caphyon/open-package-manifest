@@ -9,7 +9,7 @@
   can never leave a corrupt fragment on disk. The destination directory is
   created if needed.
 #>
-function Write-PacKitBytes {
+function Write-OpmBytes {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, Position = 0)]

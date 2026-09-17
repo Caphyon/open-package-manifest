@@ -18,13 +18,13 @@
   IsValid, Errors and Warnings so CI can log specifics.
 
 .EXAMPLE
-  if (-not (Test-PacKitApplicationFragment -Fragment $app)) { throw 'invalid fragment' }
+  if (-not (Test-OpmApplicationFragment -Fragment $app)) { throw 'invalid fragment' }
 
 .EXAMPLE
-  $report = Test-PacKitApplicationFragment -Fragment $app -Detailed
+  $report = Test-OpmApplicationFragment -Fragment $app -Detailed
   $report.Errors
 #>
-function Test-PacKitApplicationFragment {
+function Test-OpmApplicationFragment {
     [CmdletBinding()]
     [OutputType([bool])]
     param(
@@ -38,9 +38,9 @@ function Test-PacKitApplicationFragment {
     process {
         $errors = New-Object System.Collections.Generic.List[string]
         $warnings = New-Object System.Collections.Generic.List[string]
-        $schema = Get-PacKitSchema
+        $schema = Get-OpmSchema
 
-        if (-not (Test-PacKitGuid -Value $Fragment.AppId)) {
+        if (-not (Test-OpmGuid -Value $Fragment.AppId)) {
             $errors.Add("AppId '$($Fragment.AppId)' is not a valid braced UPPERCASE GUID.")
         }
         if ([string]::IsNullOrEmpty($Fragment.Name)) {
@@ -48,7 +48,7 @@ function Test-PacKitApplicationFragment {
         }
 
         foreach ($pkg in @($Fragment.Packages)) {
-            if (-not (Test-PacKitGuid -Value $pkg.PackageId)) {
+            if (-not (Test-OpmGuid -Value $pkg.PackageId)) {
                 $errors.Add("Package PackageId '$($pkg.PackageId)' is not a valid braced UPPERCASE GUID.")
             }
             if (-not [string]::IsNullOrEmpty($pkg.Type) -and ($schema.PackageTypes -notcontains $pkg.Type)) {
@@ -57,7 +57,7 @@ function Test-PacKitApplicationFragment {
         }
 
         foreach ($asg in @($Fragment.IntuneAssignments)) {
-            if (-not (Test-PacKitGuid -Value $asg.MsEntraGroupId)) {
+            if (-not (Test-OpmGuid -Value $asg.MsEntraGroupId)) {
                 $errors.Add("Assignment MsEntraGroupId '$($asg.MsEntraGroupId)' is not a valid braced UPPERCASE GUID.")
             }
         }
@@ -77,8 +77,8 @@ function Test-PacKitApplicationFragment {
         foreach ($target in $textTargets) {
             foreach ($d in $target.Descriptors) {
                 if ($d.Type -ne 'String') { continue }
-                $text = [string](Get-PacKitValueByPath -Object $target.Obj -Path $d.Path)
-                if (-not (Test-PacKitXmlSafeText -Value $text)) {
+                $text = [string](Get-OpmValueByPath -Object $target.Obj -Path $d.Path)
+                if (-not (Test-OpmXmlSafeText -Value $text)) {
                     $errors.Add("$($target.Label) field '$($d.Name)' contains an XML-invalid control character (only TAB, CR and LF are allowed); PacKit's XML reader would reject the fragment.")
                 }
             }

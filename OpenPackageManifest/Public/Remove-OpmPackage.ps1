@@ -7,9 +7,9 @@
   fragment's Packages collection. The fragment is modified in place.
 
 .EXAMPLE
-  Remove-PacKitPackage -Fragment $app -PackageId '{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}'
+  Remove-OpmPackage -Fragment $app -PackageId '{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}'
 #>
-function Remove-PacKitPackage {
+function Remove-OpmPackage {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory, ValueFromPipeline)]
@@ -23,7 +23,7 @@ function Remove-PacKitPackage {
     )
 
     process {
-        $target = ConvertTo-PacKitCanonicalGuid -Value $PackageId
+        $target = ConvertTo-OpmCanonicalGuid -Value $PackageId
         $before = @($Fragment.Packages).Count
         $Fragment.Packages = @($Fragment.Packages | Where-Object { $_.PackageId -ne $target })
         $after = @($Fragment.Packages).Count

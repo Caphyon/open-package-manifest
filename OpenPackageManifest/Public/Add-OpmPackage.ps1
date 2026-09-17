@@ -12,12 +12,12 @@
   -PassThru to emit the newly created package object (e.g. to add scan results).
 
 .EXAMPLE
-  Add-PacKitPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.0.0'
+  Add-OpmPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.0.0'
 
 .EXAMPLE
-  $pkg = Add-PacKitPackage -Fragment $app -Path 'Deploy-Application.ps1' -PassThru
+  $pkg = Add-OpmPackage -Fragment $app -Path 'Deploy-Application.ps1' -PassThru
 #>
-function Add-PacKitPackage {
+function Add-OpmPackage {
     [CmdletBinding()]
     [OutputType('PacKit.Package')]
     param(
@@ -42,7 +42,7 @@ function Add-PacKitPackage {
     )
 
     process {
-        $pkg = New-PacKitPackageObject
+        $pkg = New-OpmPackageObject
 
         if (-not [string]::IsNullOrEmpty($PackageId)) {
             $parsed = [guid]::Empty
@@ -52,7 +52,7 @@ function Add-PacKitPackage {
             $pkg.PackageId = $parsed.ToString('B').ToUpperInvariant()
         }
         else {
-            $pkg.PackageId = New-PacKitGuid
+            $pkg.PackageId = New-OpmGuid
         }
 
         $pkg.Path = $Path

@@ -3,30 +3,30 @@
            elementFormDefault="qualified"
            attributeFormDefault="unqualified">
 
-  <!-- New-PacKitGuid / Test-PacKitGuid: braced, UPPERCASE -->
-  <xs:simpleType name="PacKitGuidType">
+  <!-- New-OpmGuid / Test-OpmGuid: braced, UPPERCASE -->
+  <xs:simpleType name="OpmGuidType">
     <xs:restriction base="xs:string">
       <xs:pattern value="\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}"/>
     </xs:restriction>
   </xs:simpleType>
 
-  <!-- Get-PacKitAttributeText 'Bool' case: literal "true"/"false" only. -->
-  <xs:simpleType name="PacKitBoolType">
+  <!-- Get-OpmAttributeText 'Bool' case: literal "true"/"false" only. -->
+  <xs:simpleType name="OpmBoolType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="true"/>
       <xs:enumeration value="false"/>
     </xs:restriction>
   </xs:simpleType>
 
-  <!-- Get-PacKitAttributeText 'TimeT' case: non-negative integer, "0" when unset. -->
-  <xs:simpleType name="PacKitTimeTType">
+  <!-- Get-OpmAttributeText 'TimeT' case: non-negative integer, "0" when unset. -->
+  <xs:simpleType name="OpmTimeTType">
     <xs:restriction base="xs:string">
       <xs:pattern value="[0-9]+"/>
     </xs:restriction>
   </xs:simpleType>
 
-  <!-- Get-PacKitAttributeText 'Double' case: ('F6' invariant-culture), e.g. "0.950000". -->
-  <xs:simpleType name="PacKitDoubleType">
+  <!-- Get-OpmAttributeText 'Double' case: ('F6' invariant-culture), e.g. "0.950000". -->
+  <xs:simpleType name="OpmDoubleType">
     <xs:restriction base="xs:string">
       <xs:pattern value="-?[0-9]+\.[0-9]{6}"/>
     </xs:restriction>
@@ -35,7 +35,7 @@
   <xs:element name="FRAGMENT">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="ITEM" type="PacKitAppItemType">
+        <xs:element name="ITEM" type="OpmAppItemType">
           <xs:unique name="UniqueCollectionName">
             <xs:selector xpath="COLLECTION"/>
             <xs:field xpath="@Name"/>
@@ -46,13 +46,13 @@
     </xs:complexType>
   </xs:element>
 
-  <!-- Application ITEM: attribute order per Get-PacKitSchema.App (WorkspaceApps.cpp:414-442). -->
-  <xs:complexType name="PacKitAppItemType">
+  <!-- Application ITEM: attribute order per Get-OpmSchema.App (WorkspaceApps.cpp:414-442). -->
+  <xs:complexType name="OpmAppItemType">
     <xs:sequence>
-      <xs:element name="COLLECTION" type="PacKitAppCollectionType" minOccurs="2" maxOccurs="2"/>
+      <xs:element name="COLLECTION" type="OpmAppCollectionType" minOccurs="2" maxOccurs="2"/>
     </xs:sequence>
 
-    <xs:attribute name="AppId" type="PacKitGuidType" use="required"/>
+    <xs:attribute name="AppId" type="OpmGuidType" use="required"/>
     <xs:attribute name="Name" use="required">
       <xs:simpleType>
         <xs:restriction base="xs:string">
@@ -63,8 +63,8 @@
     <xs:attribute name="Vendor" type="xs:string" use="required"/>
     <xs:attribute name="Description" type="xs:string" use="required"/>
     <xs:attribute name="IconPath" type="xs:string" use="required"/>
-    <xs:attribute name="WinGetAppScannedAt" type="PacKitTimeTType" use="required"/>
-    <xs:attribute name="Unseen" type="PacKitBoolType" use="required"/>
+    <xs:attribute name="WinGetAppScannedAt" type="OpmTimeTType" use="required"/>
+    <xs:attribute name="Unseen" type="OpmBoolType" use="required"/>
     <xs:attribute name="OperatingSys" type="xs:string" use="required"/>
     <xs:attribute name="OperatingSysArchitecture" type="xs:string" use="required"/>
     <xs:attribute name="ReturnCodesJson" type="xs:string" use="required"/>
@@ -87,9 +87,9 @@
     <xs:attribute name="DetectionRuleRegDetectionValue" type="xs:string" use="required"/>
   </xs:complexType>
 
-  <xs:complexType name="PacKitAppCollectionType">
+  <xs:complexType name="OpmAppCollectionType">
     <xs:sequence>
-      <xs:element name="ITEM" type="PacKitCollectionItemType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="ITEM" type="OpmCollectionItemType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="Name" use="required">
       <xs:simpleType>
@@ -101,18 +101,18 @@
     </xs:attribute>
   </xs:complexType>
 
-  <xs:complexType name="PacKitCollectionItemType">
+  <xs:complexType name="OpmCollectionItemType">
     <xs:sequence>
       <!-- Present (always, even empty) only on Package ITEMs. -->
-      <xs:element name="COLLECTION" type="PacKitWinGetScanResultsCollectionType" minOccurs="0"/>
+      <xs:element name="COLLECTION" type="OpmWinGetScanResultsCollectionType" minOccurs="0"/>
     </xs:sequence>
 
     <!-- Packages ITEM attributes -->
-    <xs:attribute name="PackageId" type="PacKitGuidType"/>
+    <xs:attribute name="PackageId" type="OpmGuidType"/>
     <xs:attribute name="PackageIntuneId" type="xs:string"/>
     <xs:attribute name="CatalogPackageId" type="xs:string"/>
-    <xs:attribute name="CatalogUpdateCheckedAt" type="PacKitTimeTType"/>
-    <xs:attribute name="CatalogUpdateAvailable" type="PacKitBoolType"/>
+    <xs:attribute name="CatalogUpdateCheckedAt" type="OpmTimeTType"/>
+    <xs:attribute name="CatalogUpdateAvailable" type="OpmBoolType"/>
     <xs:attribute name="InstallCmdLine" type="xs:string"/>
     <xs:attribute name="UninstallCmdLine" type="xs:string"/>
     <xs:attribute name="Path" type="xs:string"/>
@@ -126,23 +126,23 @@
     <xs:attribute name="IntuneEncryptionIV" type="xs:string"/>
 
     <!-- IntuneAssignments ITEM attributes -->
-    <xs:attribute name="MsEntraGroupId" type="PacKitGuidType"/>
+    <xs:attribute name="MsEntraGroupId" type="OpmGuidType"/>
     <xs:attribute name="AssignmentType" type="xs:string"/>
     <xs:attribute name="InclusionType" type="xs:string"/>
   </xs:complexType>
 
   <!-- <COLLECTION Name="WinGetScanResults">0..N scan-result ITEMs</COLLECTION> -->
-  <xs:complexType name="PacKitWinGetScanResultsCollectionType">
+  <xs:complexType name="OpmWinGetScanResultsCollectionType">
     <xs:sequence>
-      <xs:element name="ITEM" type="PacKitWinGetScanResultItemType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="ITEM" type="OpmWinGetScanResultItemType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="Name" type="xs:string" fixed="WinGetScanResults" use="required"/>
   </xs:complexType>
 
-  <!-- WinGetScanResult ITEM: attribute order per Get-PacKitSchema.WinGetScanResult (WorkspaceApps.cpp:480-483). -->
-  <xs:complexType name="PacKitWinGetScanResultItemType">
+  <!-- WinGetScanResult ITEM: attribute order per Get-OpmSchema.WinGetScanResult (WorkspaceApps.cpp:480-483). -->
+  <xs:complexType name="OpmWinGetScanResultItemType">
     <xs:attribute name="WinGetCatalogPackageId" type="xs:string" use="required"/>
-    <xs:attribute name="WinGetMatchScore" type="PacKitDoubleType" use="required"/>
+    <xs:attribute name="WinGetMatchScore" type="OpmDoubleType" use="required"/>
     <xs:attribute name="WinGetAppVendor" type="xs:string" use="required"/>
   </xs:complexType>
 

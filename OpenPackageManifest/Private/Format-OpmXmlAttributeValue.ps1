@@ -17,7 +17,7 @@
     lone/broken surrogate, 0xFFFE/0xFFFF, anything else -> &#<decimal>;
 #>
 
-function Format-PacKitXmlAttributeValue {
+function Format-OpmXmlAttributeValue {
     [CmdletBinding()]
     [OutputType([string])]
     param(
@@ -95,7 +95,7 @@ function Format-PacKitXmlAttributeValue {
   0xFFFE, 0xFFFF, and lone/broken surrogate code units. Returns $true when the
   text is safe to serialize, $false when it contains an XML-invalid character.
 #>
-function Test-PacKitXmlSafeText {
+function Test-OpmXmlSafeText {
     [CmdletBinding()]
     [OutputType([bool])]
     param(

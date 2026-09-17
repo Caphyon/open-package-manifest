@@ -1,26 +1,26 @@
 <#
 .SYNOPSIS
-  Load a PacKit application fragment from a .packit metadata folder (or a file).
+  Load a PacKit application fragment from a .opm metadata folder (or a file).
 
 .DESCRIPTION
-  Reads a fragment written by PacKit or by Export-PacKitApplicationFragment and
+  Reads a fragment written by PacKit or by Export-OpmApplicationFragment and
   returns a 'PacKit.ApplicationFragment' object you can inspect, modify and
   re-save.
 
   Two ways to locate the fragment:
-    -SourceFolder <dir>  (default) -> reads <dir>\.packit\<AppId>.xml when -AppId
+    -SourceFolder <dir>  (default) -> reads <dir>\.opm\<AppId>.xml when -AppId
                                       is given, otherwise the first *.xml in
-                                      <dir>\.packit (sorted by name), matching
+                                      <dir>\.opm (sorted by name), matching
                                       PacKit's own fragment discovery.
     -LiteralPath <file>           -> reads exactly that file.
 
 .EXAMPLE
-  $app = Import-PacKitApplicationFragment -SourceFolder 'C:\src\Acme'
+  $app = Import-OpmApplicationFragment -SourceFolder 'C:\src\Acme'
 
 .EXAMPLE
-  Import-PacKitApplicationFragment -LiteralPath '.\out\app.xml'
+  Import-OpmApplicationFragment -LiteralPath '.\out\app.xml'
 #>
-function Import-PacKitApplicationFragment {
+function Import-OpmApplicationFragment {
     [CmdletBinding(DefaultParameterSetName = 'BySourceFolder')]
     [OutputType('PacKit.ApplicationFragment')]
     param(
@@ -37,9 +37,9 @@ function Import-PacKitApplicationFragment {
     )
 
     if ($PSCmdlet.ParameterSetName -eq 'BySourceFolder') {
-        $packitFolder = Join-Path $SourceFolder (Get-PacKitSchema).PackitFolderName
-        if (-not (Test-Path -LiteralPath $packitFolder)) {
-            throw "No .packit folder found under '$SourceFolder' (expected '$packitFolder')."
+        $opmFolder = Join-Path $SourceFolder (Get-OpmSchema).OpmFolderName
+        if (-not (Test-Path -LiteralPath $opmFolder)) {
+            throw "No .opm folder found under '$SourceFolder' (expected '$opmFolder')."
         }
 
         if (-not [string]::IsNullOrEmpty($AppId)) {
@@ -47,12 +47,12 @@ function Import-PacKitApplicationFragment {
             if (-not [guid]::TryParse($AppId, [ref] $parsed)) {
                 throw "AppId '$AppId' is not a valid GUID."
             }
-            $file = Join-Path $packitFolder ($parsed.ToString('B').ToUpperInvariant() + '.xml')
+            $file = Join-Path $opmFolder ($parsed.ToString('B').ToUpperInvariant() + '.xml')
         }
         else {
-            $xmlFiles = @(Get-ChildItem -LiteralPath $packitFolder -Filter '*.xml' -File -ErrorAction SilentlyContinue | Sort-Object Name)
+            $xmlFiles = @(Get-ChildItem -LiteralPath $opmFolder -Filter '*.xml' -File -ErrorAction SilentlyContinue | Sort-Object Name)
             if ($xmlFiles.Count -eq 0) {
-                throw "No *.xml application fragment found in '$packitFolder'."
+                throw "No *.xml application fragment found in '$opmFolder'."
             }
             $file = $xmlFiles[0].FullName
         }
@@ -66,5 +66,5 @@ function Import-PacKitApplicationFragment {
     }
 
     $text = [System.IO.File]::ReadAllText($file)
-    return ConvertFrom-PacKitXmlString -Xml $text
+    return ConvertFrom-OpmXmlString -Xml $text
 }

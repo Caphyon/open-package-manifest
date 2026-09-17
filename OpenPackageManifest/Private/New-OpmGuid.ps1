@@ -10,7 +10,7 @@
   the braced form; we upper-case it to match PacKit byte-for-byte.
 #>
 
-function New-PacKitGuid {
+function New-OpmGuid {
     [CmdletBinding()]
     [OutputType([string])]
     param()
@@ -18,7 +18,7 @@ function New-PacKitGuid {
     return [guid]::NewGuid().ToString('B').ToUpperInvariant()
 }
 
-function Test-PacKitGuid {
+function Test-OpmGuid {
     [CmdletBinding()]
     [OutputType([bool])]
     param(
@@ -45,9 +45,9 @@ function Test-PacKitGuid {
   GUID (any case, braced or not), so id lookups and stored ids stay consistent.
   Non-GUID and empty values are returned unchanged, so callers that match
   non-GUID ids still work. This is non-throwing; cmdlets that must reject bad
-  input (e.g. Add-PacKitAssignment) validate separately.
+  input (e.g. Add-OpmAssignment) validate separately.
 #>
-function ConvertTo-PacKitCanonicalGuid {
+function ConvertTo-OpmCanonicalGuid {
     [CmdletBinding()]
     [OutputType([string])]
     param(

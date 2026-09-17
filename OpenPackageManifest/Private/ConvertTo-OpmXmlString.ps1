@@ -12,15 +12,15 @@
     - every defined attribute emitted even when empty
     - COLLECTION elements always rendered as an open+close pair (even empty)
     - leaf ITEMs self-closed (<ITEM .../>)
-    - attribute values escaped via Format-PacKitXmlAttributeValue (NOT .NET defaults)
+    - attribute values escaped via Format-OpmXmlAttributeValue (NOT .NET defaults)
 
   The structure is built into a small element tree, then rendered, so the byte
-  format lives in exactly one place (Write-PacKitElementNode) and the attribute
-  order lives in exactly one place (Get-PacKitSchema).
+  format lives in exactly one place (Write-OpmElementNode) and the attribute
+  order lives in exactly one place (Get-OpmSchema).
 #>
 
 # Resolve a dotted property path (e.g. 'DetectionRule.Format') against an object.
-function Get-PacKitValueByPath {
+function Get-OpmValueByPath {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $Object,
@@ -35,7 +35,7 @@ function Get-PacKitValueByPath {
 }
 
 # Format a raw value as its on-disk attribute text according to its schema Type.
-function Get-PacKitAttributeText {
+function Get-OpmAttributeText {
     [CmdletBinding()]
     [OutputType([string])]
     param(
@@ -65,33 +65,33 @@ function Get-PacKitAttributeText {
 }
 
 # Build the ordered attribute list (Name/Value pairs) for one item from a schema set.
-function Get-PacKitItemAttributes {
+function Get-OpmItemAttributes {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $Object,
         [Parameter(Mandatory)] [object[]] $Descriptors
     )
     $attrs = @(foreach ($d in $Descriptors) {
-            $raw = Get-PacKitValueByPath -Object $Object -Path $d.Path
-            @{ Name = $d.Name; Value = (Get-PacKitAttributeText -Value $raw -Type $d.Type) }
+            $raw = Get-OpmValueByPath -Object $Object -Path $d.Path
+            @{ Name = $d.Name; Value = (Get-OpmAttributeText -Value $raw -Type $d.Type) }
         })
     return , $attrs
 }
 
 # Build the element tree for a fragment file: <FRAGMENT><ITEM ...>...</ITEM></FRAGMENT>.
-function ConvertTo-PacKitElementTree {
+function ConvertTo-OpmElementTree {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] $Fragment
     )
-    $schema = Get-PacKitSchema
+    $schema = Get-OpmSchema
 
     # Packages collection
     $packageItems = @(foreach ($pkg in @($Fragment.Packages)) {
             $scanItems = @(foreach ($scan in @($pkg.WinGetScanResults)) {
                     @{
                         Name       = 'ITEM'
-                        Attributes = (Get-PacKitItemAttributes -Object $scan -Descriptors $schema.WinGetScanResult)
+                        Attributes = (Get-OpmItemAttributes -Object $scan -Descriptors $schema.WinGetScanResult)
                         Children   = @()
                         ForceOpen  = $false
                     }
@@ -104,7 +104,7 @@ function ConvertTo-PacKitElementTree {
             }
             @{
                 Name       = 'ITEM'
-                Attributes = (Get-PacKitItemAttributes -Object $pkg -Descriptors $schema.Package)
+                Attributes = (Get-OpmItemAttributes -Object $pkg -Descriptors $schema.Package)
                 Children   = @($scanCollection)
                 ForceOpen  = $false
             }
@@ -120,7 +120,7 @@ function ConvertTo-PacKitElementTree {
     $assignmentItems = @(foreach ($asg in @($Fragment.IntuneAssignments)) {
             @{
                 Name       = 'ITEM'
-                Attributes = (Get-PacKitItemAttributes -Object $asg -Descriptors $schema.Assignment)
+                Attributes = (Get-OpmItemAttributes -Object $asg -Descriptors $schema.Assignment)
                 Children   = @()
                 ForceOpen  = $false
             }
@@ -134,7 +134,7 @@ function ConvertTo-PacKitElementTree {
 
     $appItem = @{
         Name       = 'ITEM'
-        Attributes = (Get-PacKitItemAttributes -Object $Fragment -Descriptors $schema.App)
+        Attributes = (Get-OpmItemAttributes -Object $Fragment -Descriptors $schema.App)
         Children   = @($packagesCollection, $assignmentsCollection)
         ForceOpen  = $false
     }
@@ -148,7 +148,7 @@ function ConvertTo-PacKitElementTree {
 }
 
 # Recursively render an element node into the StringBuilder (CRLF, 2-space indent).
-function Write-PacKitElementNode {
+function Write-OpmElementNode {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)] [hashtable] $Node,
@@ -160,7 +160,7 @@ function Write-PacKitElementNode {
 
     $open = $indent + '<' + $Node.Name
     foreach ($attr in @($Node.Attributes)) {
-        $open += ' ' + $attr.Name + '="' + (Format-PacKitXmlAttributeValue -Value ([string]$attr.Value)) + '"'
+        $open += ' ' + $attr.Name + '="' + (Format-OpmXmlAttributeValue -Value ([string]$attr.Value)) + '"'
     }
 
     $children = @($Node.Children)
@@ -170,7 +170,7 @@ function Write-PacKitElementNode {
     if ($hasChildren -or $forceOpen) {
         [void]$Builder.Append($open).Append('>').Append($eol)
         foreach ($child in $children) {
-            Write-PacKitElementNode -Node $child -Depth ($Depth + 1) -Builder $Builder
+            Write-OpmElementNode -Node $child -Depth ($Depth + 1) -Builder $Builder
         }
         [void]$Builder.Append($indent).Append('</').Append($Node.Name).Append('>').Append($eol)
     }
@@ -179,7 +179,7 @@ function Write-PacKitElementNode {
     }
 }
 
-function ConvertTo-PacKitXmlString {
+function ConvertTo-OpmXmlString {
     [CmdletBinding()]
     [OutputType([string])]
     param(
@@ -190,8 +190,8 @@ function ConvertTo-PacKitXmlString {
         $eol = [string][char]13 + [string][char]10
         $sb = [System.Text.StringBuilder]::new()
         [void]$sb.Append('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>').Append($eol)
-        $tree = ConvertTo-PacKitElementTree -Fragment $Fragment
-        Write-PacKitElementNode -Node $tree -Depth 0 -Builder $sb
+        $tree = ConvertTo-OpmElementTree -Fragment $Fragment
+        Write-OpmElementNode -Node $tree -Depth 0 -Builder $sb
         return $sb.ToString()
     }
 }
