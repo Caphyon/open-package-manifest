@@ -20,7 +20,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string] $OutDir = (Join-Path $env:TEMP ('packit-sample-' + [guid]::NewGuid())),
+    [string] $OutDir = (Join-Path $env:TEMP ('opm-sample-' + [guid]::NewGuid())),
     [string] $GoldenPath
 )
 
@@ -47,27 +47,27 @@ function Assert-True {
 Write-Host "PacKit sample build + verification" -ForegroundColor Cyan
 Write-Host ("PowerShell {0} ({1})" -f $PSVersionTable.PSVersion, $PSVersionTable.PSEdition)
 
-Import-Module (Join-Path $scriptDir '..\PacKit\PacKit.psd1') -Force
+Import-Module (Join-Path $scriptDir '..\OpenPackageManifest\OpenPackageManifest.psd1') -Force
 
 $appId = '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
 $pkgId = '{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}'
 $groupId = '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
 
 # --- 2..3 author + instrument -------------------------------------------------
-$app = New-PacKitApplicationFragment -Name "Acme & Co `"Reader`" <v1> 'X'" -AppId $appId `
+$app = New-OpmApplicationFragment -Name "Acme & Co `"Reader`" <v1> 'X'" -AppId $appId `
     -Vendor 'Acme Corporation' -Description 'Reads PDFs' -IconPath 'icons\app.png' `
     -OperatingSys 'Windows' -OperatingSysArchitecture 'x64'
 
-Add-PacKitPackage -Fragment $app -Path 'app.msi' -PackageId $pkgId -InstallCmdLine '/qn' -Version '1.0.0' | Out-Null
-Add-PacKitWinGetScanResult -Fragment $app -PackageId $pkgId -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme' | Out-Null
-Add-PacKitAssignment -Fragment $app -MsEntraGroupId $groupId -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+Add-OpmPackage -Fragment $app -Path 'app.msi' -PackageId $pkgId -InstallCmdLine '/qn' -Version '1.0.0' | Out-Null
+Add-OpmWinGetScanResult -Fragment $app -PackageId $pkgId -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme' | Out-Null
+Add-OpmAssignment -Fragment $app -MsEntraGroupId $groupId -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
 
 Write-Host "`nValidation:" -ForegroundColor Cyan
-Assert-True 'fragment validates' (Test-PacKitApplicationFragment -Fragment $app)
+Assert-True 'fragment validates' (Test-OpmApplicationFragment -Fragment $app)
 
 # --- 4 export -----------------------------------------------------------------
-Initialize-PacKitFolder -SourceFolder $OutDir | Out-Null
-$written = Export-PacKitApplicationFragment -Fragment $app -SourceFolder $OutDir
+Initialize-OpmFolder -SourceFolder $OutDir | Out-Null
+$written = Export-OpmApplicationFragment -Fragment $app -SourceFolder $OutDir
 Write-Host ("`nWrote: {0}" -f $written)
 
 # --- 5 verify the artifact ----------------------------------------------------
@@ -102,13 +102,13 @@ Assert-True 'special characters escaped' ($text -match [regex]::Escape('Name="Ac
 
 # --- load round-trip ----------------------------------------------------------
 Write-Host "`nRound-trip:" -ForegroundColor Cyan
-$reloaded = Import-PacKitApplicationFragment -SourceFolder $OutDir
+$reloaded = Import-OpmApplicationFragment -SourceFolder $OutDir
 Assert-True 'reloads with the same AppId' ($reloaded.AppId -eq $appId)
 Assert-True 'reloads the raw (unescaped) Name' ($reloaded.Name -eq ("Acme & Co `"Reader`" <v1> 'X'"))
 Assert-True 'reloads one package (Type=msi)' ($reloaded.Packages.Count -eq 1 -and $reloaded.Packages[0].Type -eq 'msi')
 Assert-True 'reloads one assignment' ($reloaded.IntuneAssignments.Count -eq 1)
 $out2 = Join-Path $OutDir 'roundtrip.xml'
-Export-PacKitApplicationFragment -Fragment $reloaded -LiteralPath $out2 | Out-Null
+Export-OpmApplicationFragment -Fragment $reloaded -LiteralPath $out2 | Out-Null
 Assert-True 'export is idempotent (re-export byte-stable)' ((([System.IO.File]::ReadAllBytes($out2)) -join ',') -eq ($bytes -join ','))
 
 # --- byte-identity vs golden --------------------------------------------------

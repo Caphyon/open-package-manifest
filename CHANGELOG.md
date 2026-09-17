@@ -1,11 +1,18 @@
 # Changelog
 
-All notable changes to the **PacKit** PowerShell module are documented in this file.
+All notable changes to the **OpenPackageManifest** PowerShell module are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+- Rebranded the project and PowerShell module from **PacKit** to
+  **OpenPackageManifest**. All 13 public cmdlets moved from the `PacKit`
+  prefix to `Opm` (e.g. `New-PacKitApplicationFragment` -> `New-OpmApplicationFragment`).
+  The module folder/manifest/loader are now `OpenPackageManifest/OpenPackageManifest.psd1`
+  / `.psm1`. The generated metadata folder remains `.packit`.
 
 ## [1.0.0] - 2026-06-25
 

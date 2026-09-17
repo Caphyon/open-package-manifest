@@ -1,14 +1,14 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Build, lint, test, package and publish the PacKit PowerShell module.
+  Build, lint, test, package and publish the OpenPackageManifest PowerShell module.
 
 .DESCRIPTION
   Single entry point used locally and by CI. Tasks:
     Clean   - remove the output folder
     Lint    - run PSScriptAnalyzer with PSScriptAnalyzerSettings.psd1
     Test    - run the Pester 5 suite (writes NUnit results to output\testResults.xml)
-    Package - stage the runtime module to output\PacKit and zip it to output\PacKit-<version>.zip
+    Package - stage the runtime module to output\OpenPackageManifest and zip it to output\OpenPackageManifest-<version>.zip
     Publish - Publish-Module the staged module to a gallery (needs an API key)
     All     - Clean + Lint + Test + Package (the default)
 
@@ -46,7 +46,7 @@ Set-StrictMode -Version Latest
 $scriptDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
 if ([string]::IsNullOrEmpty($OutputPath)) { $OutputPath = Join-Path $scriptDir 'output' }
 
-$ModuleName = 'PacKit'
+$ModuleName = 'OpenPackageManifest'
 $ModuleRoot = Join-Path $scriptDir $ModuleName
 $ManifestPath = Join-Path $ModuleRoot "$ModuleName.psd1"
 $StagePath = Join-Path $OutputPath $ModuleName
@@ -161,7 +161,7 @@ function Invoke-Package {
         Copy-Item -LiteralPath (Join-Path $ModuleRoot $dir) -Destination $StagePath -Recurse
     }
     # Ship license + docs alongside the module.
-    foreach ($doc in @('LICENSE.txt', 'README.md', 'CHANGELOG.md')) {
+    foreach ($doc in @('LICENSE', 'README.md', 'CHANGELOG.md')) {
         $docPath = Join-Path $scriptDir $doc
         if (Test-Path -LiteralPath $docPath) {
             Copy-Item -LiteralPath $docPath -Destination $StagePath
