@@ -1,11 +1,11 @@
 <#
-  Tests for ConvertTo-PacKitXmlString / Write-PacKitBytes - the byte-fidelity
+  Tests for ConvertTo-OpmXmlString / Write-OpmBytes - the byte-fidelity
   crux. The emitter output MUST be byte-identical to the hand-built golden
   fixtures, which encode the C++ PacKit writer's exact format.
 #>
 
 BeforeAll {
-    $modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'PacKit\PacKit.psd1'
+    $modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'OpenPackageManifest\OpenPackageManifest.psd1'
     Import-Module $modulePath -Force
 
     $script:fixturesDir = Join-Path $PSScriptRoot 'fixtures'
@@ -16,8 +16,8 @@ BeforeAll {
     $script:goldenFragmentBytes = [System.IO.File]::ReadAllBytes($script:goldenFragmentPath)
 
     # Build the canonical sample fragment object and emit it (inside module scope).
-    $script:actualFragmentText = InModuleScope PacKit {
-        $app = New-PacKitApplicationFragmentObject
+    $script:actualFragmentText = InModuleScope OpenPackageManifest {
+        $app = New-OpmApplicationFragmentObject
         $app.AppId = '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
         $app.Name = "Acme & Co `"Reader`" <v1> 'X'"
         $app.Vendor = 'Acme Corporation'
@@ -26,14 +26,14 @@ BeforeAll {
         $app.OperatingSys = 'Windows'
         $app.OperatingSysArchitecture = 'x64'
 
-        $pkg = New-PacKitPackageObject
+        $pkg = New-OpmPackageObject
         $pkg.PackageId = '{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}'
         $pkg.InstallCmdLine = '/qn'
         $pkg.Path = 'app.msi'
         $pkg.Type = 'msi'
         $pkg.Version = '1.0.0'
 
-        $scan = New-PacKitWinGetScanResultObject
+        $scan = New-OpmWinGetScanResultObject
         $scan.CatalogPackageId = 'Acme.Reader'
         $scan.MatchScore = 0.95
         $scan.Vendor = 'Acme'
@@ -41,29 +41,29 @@ BeforeAll {
 
         $app.Packages = @($pkg)
 
-        $asg = New-PacKitAssignmentObject
+        $asg = New-OpmAssignmentObject
         $asg.MsEntraGroupId = '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
         $asg.AssignmentType = 'Required'
         $asg.InclusionType = 'Include'
         $app.IntuneAssignments = @($asg)
 
-        ConvertTo-PacKitXmlString -Fragment $app
+        ConvertTo-OpmXmlString -Fragment $app
     }
 
     # Build the minimal fragment object and emit it.
-    $script:actualEmptyText = InModuleScope PacKit {
-        $app = New-PacKitApplicationFragmentObject
+    $script:actualEmptyText = InModuleScope OpenPackageManifest {
+        $app = New-OpmApplicationFragmentObject
         $app.AppId = '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
         $app.Name = 'Minimal'
-        ConvertTo-PacKitXmlString -Fragment $app
+        ConvertTo-OpmXmlString -Fragment $app
     }
 }
 
 AfterAll {
-    Remove-Module PacKit -Force -ErrorAction SilentlyContinue
+    Remove-Module OpenPackageManifest -Force -ErrorAction SilentlyContinue
 }
 
-Describe 'ConvertTo-PacKitXmlString' {
+Describe 'ConvertTo-OpmXmlString' {
 
     It 'starts with the exact XML declaration followed by CRLF' {
         $expected = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + [char]13 + [char]10
@@ -109,14 +109,14 @@ Describe 'ConvertTo-PacKitXmlString' {
     }
 }
 
-Describe 'Write-PacKitBytes' {
+Describe 'Write-OpmBytes' {
 
     It 'writes UTF-8 without a BOM and preserves exact bytes' {
-        $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("packit-wb-{0}.xml" -f ([guid]::NewGuid()))
+        $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("opm-wb-{0}.xml" -f ([guid]::NewGuid()))
         try {
-            InModuleScope PacKit -Parameters @{ p = $tmp; c = $script:actualFragmentText } {
+            InModuleScope OpenPackageManifest -Parameters @{ p = $tmp; c = $script:actualFragmentText } {
                 param($p, $c)
-                Write-PacKitBytes -Path $p -Content $c | Out-Null
+                Write-OpmBytes -Path $p -Content $c | Out-Null
             }
             $written = [System.IO.File]::ReadAllBytes($tmp)
             ($written -join ',') | Should -BeExactly ($script:goldenFragmentBytes -join ',')
@@ -127,12 +127,12 @@ Describe 'Write-PacKitBytes' {
     }
 
     It 'creates the destination directory if missing' {
-        $dir = Join-Path ([System.IO.Path]::GetTempPath()) ("packit-wbdir-{0}" -f ([guid]::NewGuid()))
+        $dir = Join-Path ([System.IO.Path]::GetTempPath()) ("opm-wbdir-{0}" -f ([guid]::NewGuid()))
         $target = Join-Path $dir 'sub\frag.xml'
         try {
-            InModuleScope PacKit -Parameters @{ p = $target } {
+            InModuleScope OpenPackageManifest -Parameters @{ p = $target } {
                 param($p)
-                Write-PacKitBytes -Path $p -Content 'x' | Out-Null
+                Write-OpmBytes -Path $p -Content 'x' | Out-Null
             }
             Test-Path -LiteralPath $target | Should -BeTrue
         }

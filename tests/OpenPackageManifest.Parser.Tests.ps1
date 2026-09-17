@@ -1,31 +1,31 @@
 <#
-  Tests for ConvertFrom-PacKitXmlString - parses a fragment back into the typed
+  Tests for ConvertFrom-OpmXmlString - parses a fragment back into the typed
   object model and unescapes attribute values (the inverse of the emitter).
 #>
 
 BeforeAll {
-    $modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'PacKit\PacKit.psd1'
+    $modulePath = Join-Path (Split-Path $PSScriptRoot -Parent) 'OpenPackageManifest\OpenPackageManifest.psd1'
     Import-Module $modulePath -Force
 
     $script:fixturesDir = Join-Path $PSScriptRoot 'fixtures'
     $script:goldenFragmentText = [System.IO.File]::ReadAllText((Join-Path $script:fixturesDir 'golden-fragment.xml'))
     $script:goldenEmptyText = [System.IO.File]::ReadAllText((Join-Path $script:fixturesDir 'golden-empty.xml'))
 
-    $script:app = InModuleScope PacKit -Parameters @{ xml = $script:goldenFragmentText } {
+    $script:app = InModuleScope OpenPackageManifest -Parameters @{ xml = $script:goldenFragmentText } {
         param($xml)
-        ConvertFrom-PacKitXmlString -Xml $xml
+        ConvertFrom-OpmXmlString -Xml $xml
     }
-    $script:empty = InModuleScope PacKit -Parameters @{ xml = $script:goldenEmptyText } {
+    $script:empty = InModuleScope OpenPackageManifest -Parameters @{ xml = $script:goldenEmptyText } {
         param($xml)
-        ConvertFrom-PacKitXmlString -Xml $xml
+        ConvertFrom-OpmXmlString -Xml $xml
     }
 }
 
 AfterAll {
-    Remove-Module PacKit -Force -ErrorAction SilentlyContinue
+    Remove-Module OpenPackageManifest -Force -ErrorAction SilentlyContinue
 }
 
-Describe 'ConvertFrom-PacKitXmlString' {
+Describe 'ConvertFrom-OpmXmlString' {
 
     It 'returns a PacKit.ApplicationFragment' {
         $script:app.PSObject.TypeNames[0] | Should -BeExactly 'PacKit.ApplicationFragment'
@@ -90,13 +90,13 @@ Describe 'ConvertFrom-PacKitXmlString' {
 
     It 'throws on a non-fragment root element' {
         {
-            InModuleScope PacKit { ConvertFrom-PacKitXmlString -Xml '<PROJECT Version="23.8"></PROJECT>' }
+            InModuleScope OpenPackageManifest { ConvertFrom-OpmXmlString -Xml '<PROJECT Version="23.8"></PROJECT>' }
         } | Should -Throw
     }
 
     It 'throws on malformed XML' {
         {
-            InModuleScope PacKit { ConvertFrom-PacKitXmlString -Xml '<FRAGMENT><ITEM' }
+            InModuleScope OpenPackageManifest { ConvertFrom-OpmXmlString -Xml '<FRAGMENT><ITEM' }
         } | Should -Throw
     }
 }
