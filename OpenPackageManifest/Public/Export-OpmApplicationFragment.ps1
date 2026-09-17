@@ -1,21 +1,21 @@
 <#
 .SYNOPSIS
-  Save a PacKit application fragment to a .opm metadata folder (or a file).
+  Save a PacKit application fragment to a .packit metadata folder (or a file).
 
 .DESCRIPTION
   Serializes a 'PacKit.ApplicationFragment' to the exact PacKit on-disk format
   (UTF-8 no BOM, CRLF, byte-faithful) so the PacKit app can load it.
 
   Two ways to choose the destination:
-    -SourceFolder <dir>  (default) -> writes <dir>\.opm\<AppId>.xml, creating
-                                      the .opm folder if needed. This is the
+    -SourceFolder <dir>  (default) -> writes <dir>\.packit\<AppId>.xml, creating
+                                      the .packit folder if needed. This is the
                                       "instrument an application" target.
     -LiteralPath <file>           -> writes exactly that file.
 
   By default path-bearing attributes are written verbatim, guaranteeing a clean
   Import->Export round-trip. Pass -RelativizePaths to rewrite any ABSOLUTE
   IconPath / detection-script / package Path / SourceFolder relative to the
-  .opm folder (matching how PacKit itself stores them); already-relative
+  .packit folder (matching how PacKit itself stores them); already-relative
   values are left untouched and the input object is never mutated.
 
 .EXAMPLE

@@ -1,6 +1,6 @@
 <#
   Tests for Export-OpmApplicationFragment - writes a byte-faithful fragment
-  to a .opm folder or a literal path, with ShouldProcess support.
+  to a .packit folder or a literal path, with ShouldProcess support.
 #>
 
 BeforeAll {
@@ -26,16 +26,16 @@ Describe 'Export-OpmApplicationFragment' {
         Remove-Item -LiteralPath $script:work -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'writes the fragment to .opm\{AppId}.xml under -SourceFolder' {
+    It 'writes the fragment to .packit\{AppId}.xml under -SourceFolder' {
         $app = New-OpmApplicationFragment -Name 'Acme' -AppId '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
         $written = Export-OpmApplicationFragment -Fragment $app -SourceFolder $script:work
-        $expected = Join-Path $script:work '.opm\{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}.xml'
+        $expected = Join-Path $script:work '.packit\{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}.xml'
         $written | Should -BeExactly $expected
         Test-Path -LiteralPath $expected | Should -BeTrue
     }
 
     It 'accepts the fragment from the pipeline' {
-        $expected = Join-Path $script:work '.opm\{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}.xml'
+        $expected = Join-Path $script:work '.packit\{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}.xml'
         New-OpmApplicationFragment -Name 'Acme' -AppId '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}' |
             Export-OpmApplicationFragment -SourceFolder $script:work | Out-Null
         Test-Path -LiteralPath $expected | Should -BeTrue
@@ -83,7 +83,7 @@ Describe 'Export-OpmApplicationFragment' {
         { Export-OpmApplicationFragment -Fragment $app -SourceFolder $script:work } | Should -Throw
     }
 
-    It 'rewrites an absolute package Path relative to .opm with -RelativizePaths' {
+    It 'rewrites an absolute package Path relative to .packit with -RelativizePaths' {
         $abs = Join-Path $script:work 'installers\app.msi'
         $app = New-OpmApplicationFragment -Name 'Acme' -AppId '{0A2B3C4D-5E6F-7A8B-9C0D-1E2F3A4B5C6D}'
         $pkg = InModuleScope OpenPackageManifest -Parameters @{ p = $abs } {
@@ -97,7 +97,7 @@ Describe 'Export-OpmApplicationFragment' {
         $app.Packages = @($pkg)
         Export-OpmApplicationFragment -Fragment $app -SourceFolder $script:work -RelativizePaths | Out-Null
         $reloaded = Import-OpmApplicationFragment -SourceFolder $script:work
-        # .opm is <work>\.opm ; installer is <work>\installers\app.msi ; relative = ..\installers\app.msi
+        # .packit is <work>\.packit ; installer is <work>\installers\app.msi ; relative = ..\installers\app.msi
         $reloaded.Packages[0].Path | Should -BeExactly '..\installers\app.msi'
     }
 

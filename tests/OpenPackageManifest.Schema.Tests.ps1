@@ -45,9 +45,9 @@ Describe 'OpmSchema' {
         $names | Should -Be @('MsEntraGroupId', 'AssignmentType', 'InclusionType')
     }
 
-    It 'defines the .opm folder and its 7 managed subfolders' {
+    It 'defines the .packit folder and its 7 managed subfolders' {
         $schema = InModuleScope OpenPackageManifest { Get-OpmSchema }
-        $schema.OpmFolderName | Should -BeExactly '.opm'
+        $schema.OpmFolderName | Should -BeExactly '.packit'
         $schema.Subfolders | Should -Be @('icons', 'detection-scripts', 'psadt', 'intunewin', 'mecm', 'downloads', 'temp')
     }
 

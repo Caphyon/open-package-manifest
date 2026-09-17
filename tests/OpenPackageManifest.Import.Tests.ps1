@@ -1,6 +1,6 @@
 <#
   Tests for Import-OpmApplicationFragment - discovers and loads a fragment
-  from a .opm folder or a literal path.
+  from a .packit folder or a literal path.
 #>
 
 BeforeAll {
@@ -18,7 +18,7 @@ Describe 'Import-OpmApplicationFragment' {
 
     BeforeEach {
         $script:work = Join-Path ([System.IO.Path]::GetTempPath()) ("opm-imp-{0}" -f ([guid]::NewGuid()))
-        $script:opmFolder = Join-Path $script:work '.opm'
+        $script:opmFolder = Join-Path $script:work '.packit'
         New-Item -ItemType Directory -Path $script:opmFolder -Force | Out-Null
         Copy-Item -LiteralPath $script:goldenFragmentPath -Destination (Join-Path $script:opmFolder ($script:appId + '.xml'))
     }
@@ -49,7 +49,7 @@ Describe 'Import-OpmApplicationFragment' {
         $app.Name | Should -BeExactly ('Acme & Co "Reader" <v1> ' + [char]39 + 'X' + [char]39)
     }
 
-    It 'throws when there is no .opm folder' {
+    It 'throws when there is no .packit folder' {
         $empty = Join-Path ([System.IO.Path]::GetTempPath()) ("opm-none-{0}" -f ([guid]::NewGuid()))
         New-Item -ItemType Directory -Path $empty -Force | Out-Null
         try {

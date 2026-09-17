@@ -1,9 +1,9 @@
 # OpenPackageManifest PowerShell module
 
 Author, load, modify and save **PacKit application fragments** and the
-`.opm` metadata folder — the per-application XML the
+`.packit` metadata folder — the per-application XML the
 [PacKit](https://www.getpackit.com/) app consumes. Built for CI/CD: a third
-party instruments an application with a `.opm` folder, and someone later
+party instruments an application with a `.packit` folder, and someone later
 loads it in PacKit.
 
 The module produces output that is **byte-identical** to what PacKit itself
@@ -58,11 +58,11 @@ Set-OpmDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
 Add-OpmAssignment   -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' `
                        -AssignmentType 'Required' -InclusionType 'Include'
 
-# 4. Validate, create the .opm folder, and save
+# 4. Validate, create the .packit folder, and save
 if (-not (Test-OpmApplicationFragment -Fragment $app)) { throw 'invalid fragment' }
 Initialize-OpmFolder -SourceFolder 'C:\src\Acme'
 Export-OpmApplicationFragment -Fragment $app -SourceFolder 'C:\src\Acme'
-# -> C:\src\Acme\.opm\{APP-ID}.xml
+# -> C:\src\Acme\.packit\{APP-ID}.xml
 ```
 
 Load it back, change it, and re-save:
@@ -87,21 +87,21 @@ powershell -NoProfile -File .\examples\Build-SampleApp.ps1 -OutDir C:\temp\opm-d
 `Export-OpmApplicationFragment -SourceFolder <dir>` writes:
 
 ```
-<dir>\.opm\{APP-ID}.xml      # the application fragment (UTF-8 no BOM, CRLF)
+<dir>\.packit\{APP-ID}.xml      # the application fragment (UTF-8 no BOM, CRLF)
 ```
 
 `Initialize-OpmFolder -SourceFolder <dir>` additionally creates PacKit's
 managed resource subfolders:
 
 ```
-<dir>\.opm\
+<dir>\.packit\
   icons\  detection-scripts\  psadt\  intunewin\  mecm\  downloads\  temp\
 ```
 
 The fragment is a `<FRAGMENT Version="23.8">` document containing one `<ITEM>`
 (the application), with `Packages` and `IntuneAssignments` child collections.
 Path-bearing fields (icon, detection script, package path) are stored **relative
-to the `.opm` folder**; pass `-RelativizePaths` to `Export` to rewrite
+to the `.packit` folder**; pass `-RelativizePaths` to `Export` to rewrite
 absolute inputs that way automatically.
 
 ---
@@ -111,8 +111,8 @@ absolute inputs that way automatically.
 | Cmdlet | Purpose |
 |--------|---------|
 | `New-OpmApplicationFragment` | Create a new in-memory fragment (generates a braced-UPPERCASE AppId). |
-| `Import-OpmApplicationFragment` | Load a fragment from `-SourceFolder` (`.opm\<AppId>.xml`, or the first `*.xml`) or `-LiteralPath`. |
-| `Export-OpmApplicationFragment` | Save a fragment to `-SourceFolder` (`.opm\<AppId>.xml`) or `-LiteralPath`. Supports `-WhatIf`, `-RelativizePaths`, `-PassThru`. |
+| `Import-OpmApplicationFragment` | Load a fragment from `-SourceFolder` (`.packit\<AppId>.xml`, or the first `*.xml`) or `-LiteralPath`. |
+| `Export-OpmApplicationFragment` | Save a fragment to `-SourceFolder` (`.packit\<AppId>.xml`) or `-LiteralPath`. Supports `-WhatIf`, `-RelativizePaths`, `-PassThru`. |
 | `Set-OpmApplication` | Update application-level fields (Name, Vendor, Description, IconPath, OS, …). |
 | `Set-OpmDetectionRule` | Set the detection-rule fields (MSI/File/Registry/Script). |
 | `Add-OpmPackage` | Add an installer package; `Type` is derived from the path extension. |
@@ -121,7 +121,7 @@ absolute inputs that way automatically.
 | `Add-OpmWinGetScanResult` | Attach a WinGet catalog match to a package. |
 | `Add-OpmAssignment` | Add an Intune (Entra group) assignment. |
 | `Remove-OpmAssignment` | Remove an assignment by `-MsEntraGroupId`. |
-| `Initialize-OpmFolder` | Create `.opm` + the managed subfolders (idempotent). |
+| `Initialize-OpmFolder` | Create `.packit` + the managed subfolders (idempotent). |
 | `Test-OpmApplicationFragment` | Validate a fragment (`-Detailed` for Errors/Warnings). Fails invalid GUIDs, an empty name, or any XML-invalid character (control chars / lone surrogates) in a text field. |
 
 `Get-Help <cmdlet> -Full` has parameter details and examples for each.

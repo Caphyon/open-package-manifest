@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Load a PacKit application fragment from a .opm metadata folder (or a file).
+  Load a PacKit application fragment from a .packit metadata folder (or a file).
 
 .DESCRIPTION
   Reads a fragment written by PacKit or by Export-OpmApplicationFragment and
@@ -8,9 +8,9 @@
   re-save.
 
   Two ways to locate the fragment:
-    -SourceFolder <dir>  (default) -> reads <dir>\.opm\<AppId>.xml when -AppId
+    -SourceFolder <dir>  (default) -> reads <dir>\.packit\<AppId>.xml when -AppId
                                       is given, otherwise the first *.xml in
-                                      <dir>\.opm (sorted by name), matching
+                                      <dir>\.packit (sorted by name), matching
                                       PacKit's own fragment discovery.
     -LiteralPath <file>           -> reads exactly that file.
 
@@ -39,7 +39,7 @@ function Import-OpmApplicationFragment {
     if ($PSCmdlet.ParameterSetName -eq 'BySourceFolder') {
         $opmFolder = Join-Path $SourceFolder (Get-OpmSchema).OpmFolderName
         if (-not (Test-Path -LiteralPath $opmFolder)) {
-            throw "No .opm folder found under '$SourceFolder' (expected '$opmFolder')."
+            throw "No .packit folder found under '$SourceFolder' (expected '$opmFolder')."
         }
 
         if (-not [string]::IsNullOrEmpty($AppId)) {

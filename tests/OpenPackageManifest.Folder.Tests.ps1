@@ -22,9 +22,9 @@ Describe 'Initialize-OpmFolder' {
         Remove-Item -LiteralPath $script:work -Recurse -Force -ErrorAction SilentlyContinue
     }
 
-    It 'creates .opm and the seven managed subfolders' {
+    It 'creates .packit and the seven managed subfolders' {
         $opmFolder = Initialize-OpmFolder -SourceFolder $script:work
-        $opmFolder | Should -BeExactly (Join-Path $script:work '.opm')
+        $opmFolder | Should -BeExactly (Join-Path $script:work '.packit')
         Test-Path -LiteralPath $opmFolder | Should -BeTrue
         foreach ($sub in @('icons', 'detection-scripts', 'psadt', 'intunewin', 'mecm', 'downloads', 'temp')) {
             Test-Path -LiteralPath (Join-Path $opmFolder $sub) | Should -BeTrue
@@ -34,74 +34,74 @@ Describe 'Initialize-OpmFolder' {
     It 'is idempotent on a second run' {
         Initialize-OpmFolder -SourceFolder $script:work | Out-Null
         { Initialize-OpmFolder -SourceFolder $script:work } | Should -Not -Throw
-        Test-Path -LiteralPath (Join-Path $script:work '.opm\icons') | Should -BeTrue
+        Test-Path -LiteralPath (Join-Path $script:work '.packit\icons') | Should -BeTrue
     }
 
     It 'creates nothing under -WhatIf' {
         Initialize-OpmFolder -SourceFolder $script:work -WhatIf | Out-Null
-        Test-Path -LiteralPath (Join-Path $script:work '.opm') | Should -BeFalse
+        Test-Path -LiteralPath (Join-Path $script:work '.packit') | Should -BeFalse
     }
 
     It 'accepts the source folder from the pipeline' {
         $script:work | Initialize-OpmFolder | Out-Null
-        Test-Path -LiteralPath (Join-Path $script:work '.opm') | Should -BeTrue
+        Test-Path -LiteralPath (Join-Path $script:work '.packit') | Should -BeTrue
     }
 }
 
 Describe 'Get-OpmRelativePath / Get-OpmAbsolutePath' {
 
-    It 'relativises a sibling path against the .opm folder' {
+    It 'relativises a sibling path against the .packit folder' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.opm' -Path 'C:\src\Acme\app.msi'
+            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.packit' -Path 'C:\src\Acme\app.msi'
         }
         $rel | Should -BeExactly '..\app.msi'
     }
 
     It 'relativises a nested resource path' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.opm' -Path 'C:\src\Acme\.opm\icons\app.png'
+            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.packit' -Path 'C:\src\Acme\.packit\icons\app.png'
         }
         $rel | Should -BeExactly 'icons\app.png'
     }
 
     It 'leaves an already-relative path untouched' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.opm' -Path 'icons\app.png'
+            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.packit' -Path 'icons\app.png'
         }
         $rel | Should -BeExactly 'icons\app.png'
     }
 
     It 'resolves a relative path back to absolute' {
         $abs = InModuleScope OpenPackageManifest {
-            Get-OpmAbsolutePath -BaseDirectory 'C:\src\Acme\.opm' -Path '..\app.msi'
+            Get-OpmAbsolutePath -BaseDirectory 'C:\src\Acme\.packit' -Path '..\app.msi'
         }
         $abs | Should -BeExactly 'C:\src\Acme\app.msi'
     }
 
     It 'keeps a different-drive path absolute (no corruption)' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.opm' -Path 'D:\installers\app.msi'
+            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.packit' -Path 'D:\installers\app.msi'
         }
         $rel | Should -BeExactly 'D:\installers\app.msi'
     }
 
     It 'relativises a same-host UNC sibling path' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory '\\srv1\share\app\.opm' -Path '\\srv1\share\app\file.msi'
+            Get-OpmRelativePath -BaseDirectory '\\srv1\share\app\.packit' -Path '\\srv1\share\app\file.msi'
         }
         $rel | Should -BeExactly '..\file.msi'
     }
 
     It 'keeps a cross-host UNC path absolute (no file:\\ corruption)' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory '\\srv1\share\app\.opm' -Path '\\srv2\share\app\file.msi'
+            Get-OpmRelativePath -BaseDirectory '\\srv1\share\app\.packit' -Path '\\srv2\share\app\file.msi'
         }
         $rel | Should -BeExactly '\\srv2\share\app\file.msi'
     }
 
-    It 'returns "." when the target is the base .opm folder itself (matches C++ ToRelative)' {
+    It 'returns "." when the target is the base .packit folder itself (matches C++ ToRelative)' {
         $rel = InModuleScope OpenPackageManifest {
-            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.opm' -Path 'C:\src\Acme\.opm'
+            Get-OpmRelativePath -BaseDirectory 'C:\src\Acme\.packit' -Path 'C:\src\Acme\.packit'
         }
         $rel | Should -BeExactly '.'
     }

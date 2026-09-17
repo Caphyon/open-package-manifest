@@ -5,7 +5,7 @@
     Author               = 'Caphyon'
     CompanyName          = 'Caphyon'
     Copyright            = '(c) Caphyon. All rights reserved.'
-    Description          = 'Authoring utilities for PacKit application fragments and the .opm metadata folder. Create, load, modify and save the per-application XML that the PacKit app consumes. Designed for CI/CD pipelines.'
+    Description          = 'Authoring utilities for PacKit application fragments and the .packit metadata folder. Create, load, modify and save the per-application XML that the PacKit app consumes. Designed for CI/CD pipelines.'
 
     PowerShellVersion    = '5.1'
     CompatiblePSEditions = @('Desktop', 'Core')

@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-  Relative/absolute path helpers anchored at the .opm folder.
+  Relative/absolute path helpers anchored at the .packit folder.
 
 .DESCRIPTION
   PacKit stores path-bearing attributes (IconPath, DetectionMethodScript,
-  package Path/SourceFolder) relative to the .opm folder that contains the
+  package Path/SourceFolder) relative to the .packit folder that contains the
   fragment, and resolves them back to absolute on load. These helpers mirror
   FilePath::ToRelative / ToAbsolute and work on Windows PowerShell 5.1
   (System.IO.Path.GetRelativePath is .NET Core only, so we use System.Uri).

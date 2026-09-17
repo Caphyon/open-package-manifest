@@ -90,8 +90,8 @@ function Get-OpmSchema {
         # FRAGMENT/PROJECT Version attribute value (VersionData::kVersion = APP_VERSION).
         FragmentVersion  = '23.8'
 
-        # .opm folder + its managed subfolders (PackitPaths.h:45-54).
-        OpmFolderName    = '.opm'
+        # .packit folder + its managed subfolders (PackitPaths.h:45-54).
+        OpmFolderName    = '.packit'
         Subfolders       = @('icons', 'detection-scripts', 'psadt', 'intunewin', 'mecm', 'downloads', 'temp')
 
         # Recognised package types = lowercase file extension of the package Path

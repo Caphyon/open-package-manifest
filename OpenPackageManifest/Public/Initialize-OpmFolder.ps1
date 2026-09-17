@@ -1,13 +1,13 @@
 <#
 .SYNOPSIS
-  Create a .opm metadata folder (and its managed subfolders) under a source folder.
+  Create a .packit metadata folder (and its managed subfolders) under a source folder.
 
 .DESCRIPTION
-  Creates <SourceFolder>\.opm and the standard PacKit subfolders
+  Creates <SourceFolder>\.packit and the standard PacKit subfolders
   (icons, detection-scripts, psadt, intunewin, mecm, downloads, temp). This is
   the folder PacKit reads an application's fragment and resources from. The
-  operation is idempotent. Pass -NoSubfolders to create only the .opm root.
-  Returns the full path to the .opm folder.
+  operation is idempotent. Pass -NoSubfolders to create only the .packit root.
+  Returns the full path to the .packit folder.
 
 .EXAMPLE
   $packit = Initialize-OpmFolder -SourceFolder 'C:\src\Acme'
