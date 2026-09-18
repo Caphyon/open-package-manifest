@@ -40,6 +40,7 @@ function New-OpmApplicationFragment {
         [string] $OperatingSys = '',
 
         [Parameter()]
+        [ValidateSet('', '32-bit', '64-bit')]
         [string] $OperatingSysArchitecture = ''
     )
 

@@ -15,11 +15,11 @@ Describe 'Add-OpmAssignment' {
 
     It 'appends an assignment with the supplied fields' {
         $app = New-OpmApplicationFragment -Name 'Acme'
-        Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+        Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' -AssignmentType 'Required' -InclusionType 'included' | Out-Null
         $app.IntuneAssignments.Count | Should -Be 1
         $app.IntuneAssignments[0].MsEntraGroupId | Should -BeExactly '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
         $app.IntuneAssignments[0].AssignmentType | Should -BeExactly 'Required'
-        $app.IntuneAssignments[0].InclusionType | Should -BeExactly 'Include'
+        $app.IntuneAssignments[0].InclusionType | Should -BeExactly 'included'
     }
 
     It 'returns the assignment with -PassThru' {
@@ -44,7 +44,7 @@ Describe 'Add-OpmAssignment' {
         $work = Join-Path ([System.IO.Path]::GetTempPath()) ("opm-asg-{0}" -f ([guid]::NewGuid()))
         try {
             $app = New-OpmApplicationFragment -Name 'Acme'
-            Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+            Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' -AssignmentType 'Required' -InclusionType 'included' | Out-Null
             $file = Join-Path $work 'app.xml'
             Export-OpmApplicationFragment -Fragment $app -LiteralPath $file | Out-Null
             $doc = [xml][System.IO.File]::ReadAllText($file)

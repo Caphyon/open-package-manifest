@@ -43,13 +43,13 @@ Describe 'New-OpmApplicationFragment' {
     }
 
     It 'sets the supplied application fields' {
-        $app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' -Description 'Reads PDFs' -IconPath 'icons\app.png' -OperatingSys 'Windows' -OperatingSysArchitecture 'x64'
+        $app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' -Description 'Reads PDFs' -IconPath 'icons\app.png' -OperatingSys 'Windows' -OperatingSysArchitecture '64-bit'
         $app.Name | Should -BeExactly 'Acme Reader'
         $app.Vendor | Should -BeExactly 'Acme Corporation'
         $app.Description | Should -BeExactly 'Reads PDFs'
         $app.IconPath | Should -BeExactly 'icons\app.png'
         $app.OperatingSys | Should -BeExactly 'Windows'
-        $app.OperatingSysArchitecture | Should -BeExactly 'x64'
+        $app.OperatingSysArchitecture | Should -BeExactly '64-bit'
     }
 
     It 'initialises empty Packages and IntuneAssignments arrays' {

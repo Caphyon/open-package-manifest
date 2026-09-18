@@ -32,11 +32,11 @@ Describe 'End-to-end: author -> instrument -> export -> import' {
         # Author
         $app = New-OpmApplicationFragment -Name "Acme & Co `"Reader`" <v1> 'X'" -AppId $script:appId `
             -Vendor 'Acme Corporation' -Description 'Reads PDFs' -IconPath 'icons\app.png' `
-            -OperatingSys 'Windows' -OperatingSysArchitecture 'x64'
+            -OperatingSys 'Windows' -OperatingSysArchitecture '64-bit'
 
         Add-OpmPackage -Fragment $app -Path 'app.msi' -PackageId $script:pkgId -InstallCmdLine '/qn' -Version '1.0.0' | Out-Null
         Add-OpmWinGetScanResult -Fragment $app -PackageId $script:pkgId -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme' | Out-Null
-        Add-OpmAssignment -Fragment $app -MsEntraGroupId $script:groupId -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+        Add-OpmAssignment -Fragment $app -MsEntraGroupId $script:groupId -AssignmentType 'Required' -InclusionType 'included' | Out-Null
 
         # Validate before saving
         Test-OpmApplicationFragment -Fragment $app | Should -BeTrue

@@ -48,7 +48,7 @@ Import-Module .\OpenPackageManifest\OpenPackageManifest.psd1
 
 # 1. Author the application
 $app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' `
-        -Description 'Reads PDFs' -OperatingSysArchitecture 'x64'
+        -Description 'Reads PDFs' -OperatingSysArchitecture '64-bit'
 
 # 2. Add the installer (Type is derived from the file extension -> 'msi')
 Add-OpmPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.0.0'
@@ -56,7 +56,7 @@ Add-OpmPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.
 # 3. Detection + Intune assignment (optional)
 Set-OpmDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
 Add-OpmAssignment   -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' `
-                       -AssignmentType 'Required' -InclusionType 'Include'
+                       -AssignmentType 'Required' -InclusionType 'included'
 
 # 4. Validate, create the .packit folder, and save
 if (-not (Test-OpmApplicationFragment -Fragment $app)) { throw 'invalid fragment' }

@@ -57,7 +57,7 @@ Describe 'PacKit fragments vs OpmModuleFragment.xsd' {
     It 'validates a full fragment (app + package + scan result + assignment)' {
         # -- exact commands a caller would run --
         $app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' `
-            -Description 'Reads PDFs' -IconPath 'icons\app.png' -OperatingSys 'Windows' -OperatingSysArchitecture 'x64'
+            -Description 'Reads PDFs' -IconPath 'icons\app.png' -OperatingSys 'Windows' -OperatingSysArchitecture '64-bit'
 
         Set-OpmApplication -Fragment $app -ReturnCodesJson '[0,3010]' -ScopeTagId '1' `
             -WinGetAppScannedAt 1737000000 -Unseen $false
@@ -71,7 +71,7 @@ Describe 'PacKit fragments vs OpmModuleFragment.xsd' {
             -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme' | Out-Null
 
         Add-OpmAssignment -Fragment $app -MsEntraGroupId ([guid]::NewGuid().ToString()) `
-            -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+            -AssignmentType 'Required' -InclusionType 'included' | Out-Null
 
         Test-OpmApplicationFragment -Fragment $app | Should -BeTrue
 
@@ -135,7 +135,7 @@ Describe 'PacKit fragments vs OpmModuleFragment.xsd' {
 
     It 'rejects assignment items that are shaped like packages' {
         $app = New-OpmApplicationFragment -Name 'Wrong Assignment Shape'
-        Add-OpmAssignment -Fragment $app -MsEntraGroupId ([guid]::NewGuid().ToString()) -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+        Add-OpmAssignment -Fragment $app -MsEntraGroupId ([guid]::NewGuid().ToString()) -AssignmentType 'Required' -InclusionType 'included' | Out-Null
         $target = Join-Path $script:work 'bad-assignment-shape.xml'
         Export-OpmApplicationFragment -Fragment $app -LiteralPath $target | Out-Null
 

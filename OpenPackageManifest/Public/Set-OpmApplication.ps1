@@ -8,7 +8,7 @@
   chaining.
 
 .EXAMPLE
-  Set-OpmApplication -Fragment $app -Vendor 'Acme Corporation' -OperatingSysArchitecture 'x64'
+  Set-OpmApplication -Fragment $app -Vendor 'Acme Corporation' -OperatingSysArchitecture '64-bit'
 #>
 function Set-OpmApplication {
     [CmdletBinding()]
@@ -22,7 +22,7 @@ function Set-OpmApplication {
         [Parameter()] [string] $Description,
         [Parameter()] [string] $IconPath,
         [Parameter()] [string] $OperatingSys,
-        [Parameter()] [string] $OperatingSysArchitecture,
+        [Parameter()] [ValidateSet('32-bit', '64-bit')] [string] $OperatingSysArchitecture,
         [Parameter()] [long]   $WinGetAppScannedAt,
         [Parameter()] [bool]   $Unseen,
         [Parameter()] [string] $ReturnCodesJson,

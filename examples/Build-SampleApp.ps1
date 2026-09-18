@@ -56,11 +56,11 @@ $groupId = '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
 # --- 2..3 author + instrument -------------------------------------------------
 $app = New-OpmApplicationFragment -Name "Acme & Co `"Reader`" <v1> 'X'" -AppId $appId `
     -Vendor 'Acme Corporation' -Description 'Reads PDFs' -IconPath 'icons\app.png' `
-    -OperatingSys 'Windows' -OperatingSysArchitecture 'x64'
+    -OperatingSys 'Windows' -OperatingSysArchitecture '64-bit'
 
 Add-OpmPackage -Fragment $app -Path 'app.msi' -PackageId $pkgId -InstallCmdLine '/qn' -Version '1.0.0' | Out-Null
 Add-OpmWinGetScanResult -Fragment $app -PackageId $pkgId -CatalogPackageId 'Acme.Reader' -MatchScore 0.95 -Vendor 'Acme' | Out-Null
-Add-OpmAssignment -Fragment $app -MsEntraGroupId $groupId -AssignmentType 'Required' -InclusionType 'Include' | Out-Null
+Add-OpmAssignment -Fragment $app -MsEntraGroupId $groupId -AssignmentType 'Required' -InclusionType 'included' | Out-Null
 
 Write-Host "`nValidation:" -ForegroundColor Cyan
 Assert-True 'fragment validates' (Test-OpmApplicationFragment -Fragment $app)

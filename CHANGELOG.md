@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   easy to misuse in automation scripts that need to open the referenced file.
 
 ### Changed
+- `-OperatingSysArchitecture` (`New-OpmApplicationFragment`, `Set-OpmApplication`)
+  now only accepts `'32-bit'` or `'64-bit'`.
+- `-InclusionType` (`Add-OpmAssignment`) now only accepts `'included'` or
+  `'excluded'`.
 - Rebranded the project and PowerShell module from **PacKit** to
   **OpenPackageManifest**. All 13 public cmdlets moved from the `PacKit`
   prefix to `Opm` (e.g. `New-PacKitApplicationFragment` -> `New-OpmApplicationFragment`).

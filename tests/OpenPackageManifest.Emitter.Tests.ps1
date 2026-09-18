@@ -24,7 +24,7 @@ BeforeAll {
         $app.Description = 'Reads PDFs'
         $app.IconPath = 'icons\app.png'
         $app.OperatingSys = 'Windows'
-        $app.OperatingSysArchitecture = 'x64'
+        $app.OperatingSysArchitecture = '64-bit'
 
         $pkg = New-OpmPackageObject
         $pkg.PackageId = '{1B2C3D4E-5F60-7182-93A4-B5C6D7E8F900}'
@@ -44,7 +44,7 @@ BeforeAll {
         $asg = New-OpmAssignmentObject
         $asg.MsEntraGroupId = '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
         $asg.AssignmentType = 'Required'
-        $asg.InclusionType = 'Include'
+        $asg.InclusionType = 'included'
         $app.IntuneAssignments = @($asg)
 
         ConvertTo-OpmXmlString -Fragment $app
@@ -101,7 +101,7 @@ Describe 'ConvertTo-OpmXmlString' {
     }
 
     It 'self-closes leaf ITEMs (assignment)' {
-        $script:actualFragmentText | Should -Match ([regex]::Escape('AssignmentType="Required" InclusionType="Include"/>'))
+        $script:actualFragmentText | Should -Match ([regex]::Escape('AssignmentType="Required" InclusionType="included"/>'))
     }
 
     It 'emits every defined attribute even when empty (DetectionRule fields)' {

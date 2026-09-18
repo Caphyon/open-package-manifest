@@ -15,10 +15,10 @@ Describe 'Set-OpmApplication' {
 
     It 'updates only the supplied fields' {
         $app = New-OpmApplicationFragment -Name 'Original' -Vendor 'OldVendor'
-        Set-OpmApplication -Fragment $app -Vendor 'NewVendor' -OperatingSysArchitecture 'x64'
+        Set-OpmApplication -Fragment $app -Vendor 'NewVendor' -OperatingSysArchitecture '64-bit'
         $app.Name | Should -BeExactly 'Original'   # untouched
         $app.Vendor | Should -BeExactly 'NewVendor'
-        $app.OperatingSysArchitecture | Should -BeExactly 'x64'
+        $app.OperatingSysArchitecture | Should -BeExactly '64-bit'
     }
 
     It 'sets typed numeric and boolean fields' {

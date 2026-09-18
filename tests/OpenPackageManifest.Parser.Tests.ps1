@@ -37,7 +37,7 @@ Describe 'ConvertFrom-OpmXmlString' {
         $script:app.Description | Should -BeExactly 'Reads PDFs'
         $script:app.IconPath | Should -BeExactly 'icons\app.png'
         $script:app.OperatingSys | Should -BeExactly 'Windows'
-        $script:app.OperatingSysArchitecture | Should -BeExactly 'x64'
+        $script:app.OperatingSysArchitecture | Should -BeExactly '64-bit'
     }
 
     It 'unescapes the named XML entities back to the raw Name' {
@@ -79,7 +79,7 @@ Describe 'ConvertFrom-OpmXmlString' {
         $asg = $script:app.IntuneAssignments[0]
         $asg.MsEntraGroupId | Should -BeExactly '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}'
         $asg.AssignmentType | Should -BeExactly 'Required'
-        $asg.InclusionType | Should -BeExactly 'Include'
+        $asg.InclusionType | Should -BeExactly 'included'
     }
 
     It 'parses an empty fragment with no packages or assignments' {

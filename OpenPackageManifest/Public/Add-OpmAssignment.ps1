@@ -5,11 +5,11 @@
 .DESCRIPTION
   Appends an assignment to the fragment's IntuneAssignments collection. The
   -MsEntraGroupId is the Entra group object id. -AssignmentType is typically
-  'Required', 'Available' or 'Uninstall'; -InclusionType is 'Include' or
-  'Exclude'. The fragment is modified in place.
+  'Required', 'Available' or 'Uninstall'; -InclusionType is 'included' or
+  'excluded'. The fragment is modified in place.
 
 .EXAMPLE
-  Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D...}' -AssignmentType 'Required' -InclusionType 'Include'
+  Add-OpmAssignment -Fragment $app -MsEntraGroupId '{2C3D...}' -AssignmentType 'Required' -InclusionType 'included'
 #>
 function Add-OpmAssignment {
     [CmdletBinding()]
@@ -23,7 +23,7 @@ function Add-OpmAssignment {
         [string] $MsEntraGroupId,
 
         [Parameter()] [string] $AssignmentType = '',
-        [Parameter()] [string] $InclusionType = '',
+        [Parameter()] [ValidateSet('', 'included', 'excluded')] [string] $InclusionType = '',
 
         [Parameter()] [switch] $PassThru
     )
