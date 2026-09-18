@@ -5,7 +5,7 @@
     Author               = 'Caphyon'
     CompanyName          = 'Caphyon'
     Copyright            = '(c) Caphyon. All rights reserved.'
-    Description          = 'Authoring utilities for PacKit application fragments and the .packit metadata folder. Create, load, modify and save the per-application XML that the PacKit app consumes. Designed for CI/CD pipelines.'
+    Description          = 'Open Package Manifest (OPM) is an open format for describing application deployment information alongside the application. This module provides PowerShell tools for creating, reading, modifying, and saving OPM manifests.'
 
     PowerShellVersion    = '5.1'
     CompatiblePSEditions = @('Desktop', 'Core')
