@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Run the PacKit module Pester suite, forcing Pester 5.
+  Run the OpenPackageManifest module Pester suite, forcing Pester 5.
 
 .DESCRIPTION
   Windows ships Pester 3.4.0; this repo also has Pester 5.7.1 (CurrentUser).
@@ -12,7 +12,7 @@
   powershell -NoProfile -File .\Invoke-Tests.ps1
 
 .EXAMPLE
-  powershell -NoProfile -File .\Invoke-Tests.ps1 -TestPath .\tests\PacKit.Emitter.Tests.ps1
+  powershell -NoProfile -File .\Invoke-Tests.ps1 -TestPath .\tests\OpenPackageManifest.Emitter.Tests.ps1
 #>
 [CmdletBinding()]
 param(

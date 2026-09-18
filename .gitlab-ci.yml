@@ -1,4 +1,4 @@
-# GitLab CI/CD for the PacKit PowerShell module.
+# GitLab CI/CD for the OpenPackageManifest PowerShell module.
 #
 # Requires a Windows runner with PowerShell. Adjust the `tags` under .windows to
 # match your runner. Set PSGALLERY_API_KEY as a protected, masked CI/CD variable

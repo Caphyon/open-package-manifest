@@ -1,4 +1,4 @@
-# PacKit PowerShell module
+# OpenPackageManifest PowerShell module
 
 Author, load, modify and save **PacKit application fragments** and the
 `.packit` metadata folder — the per-application XML the
@@ -24,19 +24,19 @@ writes, so a load → modify → save round-trip is lossless and diffs stay clea
 From the PowerShell Gallery:
 
 ```powershell
-Install-Module -Name PacKit -Scope CurrentUser
-Import-Module PacKit
+Install-Module -Name OpenPackageManifest -Scope CurrentUser
+Import-Module OpenPackageManifest
 ```
 
-Or vendor the self-contained `PacKit` folder into your repo / pipeline and import
+Or vendor the self-contained `OpenPackageManifest` folder into your repo / pipeline and import
 it by manifest path:
 
 ```powershell
-Import-Module .\PacKit\PacKit.psd1
+Import-Module .\OpenPackageManifest\OpenPackageManifest.psd1
 ```
 
-(You can also drop the `PacKit` folder onto a `$env:PSModulePath` entry and
-`Import-Module PacKit`. A published release zip — `PacKit-<version>.zip` —
+(You can also drop the `OpenPackageManifest` folder onto a `$env:PSModulePath` entry and
+`Import-Module OpenPackageManifest`. A published release zip — `OpenPackageManifest-<version>.zip` —
 extracts to exactly that layout.)
 
 ---
@@ -44,53 +44,53 @@ extracts to exactly that layout.)
 ## Quick start — instrument an application
 
 ```powershell
-Import-Module .\PacKit\PacKit.psd1
+Import-Module .\OpenPackageManifest\OpenPackageManifest.psd1
 
 # 1. Author the application
-$app = New-PacKitApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' `
+$app = New-OpmApplicationFragment -Name 'Acme Reader' -Vendor 'Acme Corporation' `
         -Description 'Reads PDFs' -OperatingSysArchitecture 'x64'
 
 # 2. Add the installer (Type is derived from the file extension -> 'msi')
-Add-PacKitPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.0.0'
+Add-OpmPackage -Fragment $app -Path 'app.msi' -InstallCmdLine '/qn' -Version '1.0.0'
 
 # 3. Detection + Intune assignment (optional)
-Set-PacKitDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
-Add-PacKitAssignment   -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' `
+Set-OpmDetectionRule -Fragment $app -Type 'MSI' -MsiValue '{PRODUCT-CODE}'
+Add-OpmAssignment   -Fragment $app -MsEntraGroupId '{2C3D4E5F-6071-8293-A4B5-C6D7E8F90011}' `
                        -AssignmentType 'Required' -InclusionType 'Include'
 
 # 4. Validate, create the .packit folder, and save
-if (-not (Test-PacKitApplicationFragment -Fragment $app)) { throw 'invalid fragment' }
-Initialize-PacKitFolder -SourceFolder 'C:\src\Acme'
-Export-PacKitApplicationFragment -Fragment $app -SourceFolder 'C:\src\Acme'
+if (-not (Test-OpmApplicationFragment -Fragment $app)) { throw 'invalid fragment' }
+Initialize-OpmFolder -SourceFolder 'C:\src\Acme'
+Export-OpmApplicationFragment -Fragment $app -SourceFolder 'C:\src\Acme'
 # -> C:\src\Acme\.packit\{APP-ID}.xml
 ```
 
 Load it back, change it, and re-save:
 
 ```powershell
-$app = Import-PacKitApplicationFragment -SourceFolder 'C:\src\Acme'
-Set-PacKitApplication -Fragment $app -Description 'Reads PDFs and forms'
-Export-PacKitApplicationFragment -Fragment $app -SourceFolder 'C:\src\Acme'
+$app = Import-OpmApplicationFragment -SourceFolder 'C:\src\Acme'
+Set-OpmApplication -Fragment $app -Description 'Reads PDFs and forms'
+Export-OpmApplicationFragment -Fragment $app -SourceFolder 'C:\src\Acme'
 ```
 
 A complete, runnable example with self-verification is in
 [`examples/Build-SampleApp.ps1`](examples/Build-SampleApp.ps1):
 
 ```powershell
-powershell -NoProfile -File .\examples\Build-SampleApp.ps1 -OutDir C:\temp\packit-demo
+powershell -NoProfile -File .\examples\Build-SampleApp.ps1 -OutDir C:\temp\opm-demo
 ```
 
 ---
 
 ## What gets written
 
-`Export-PacKitApplicationFragment -SourceFolder <dir>` writes:
+`Export-OpmApplicationFragment -SourceFolder <dir>` writes:
 
 ```
 <dir>\.packit\{APP-ID}.xml      # the application fragment (UTF-8 no BOM, CRLF)
 ```
 
-`Initialize-PacKitFolder -SourceFolder <dir>` additionally creates PacKit's
+`Initialize-OpmFolder -SourceFolder <dir>` additionally creates PacKit's
 managed resource subfolders:
 
 ```
@@ -110,19 +110,19 @@ absolute inputs that way automatically.
 
 | Cmdlet | Purpose |
 |--------|---------|
-| `New-PacKitApplicationFragment` | Create a new in-memory fragment (generates a braced-UPPERCASE AppId). |
-| `Import-PacKitApplicationFragment` | Load a fragment from `-SourceFolder` (`.packit\<AppId>.xml`, or the first `*.xml`) or `-LiteralPath`. |
-| `Export-PacKitApplicationFragment` | Save a fragment to `-SourceFolder` (`.packit\<AppId>.xml`) or `-LiteralPath`. Supports `-WhatIf`, `-RelativizePaths`, `-PassThru`. |
-| `Set-PacKitApplication` | Update application-level fields (Name, Vendor, Description, IconPath, OS, …). |
-| `Set-PacKitDetectionRule` | Set the detection-rule fields (MSI/File/Registry/Script). |
-| `Add-PacKitPackage` | Add an installer package; `Type` is derived from the path extension. |
-| `Set-PacKitPackage` | Update an existing package by `-PackageId`. |
-| `Remove-PacKitPackage` | Remove a package by `-PackageId`. |
-| `Add-PacKitWinGetScanResult` | Attach a WinGet catalog match to a package. |
-| `Add-PacKitAssignment` | Add an Intune (Entra group) assignment. |
-| `Remove-PacKitAssignment` | Remove an assignment by `-MsEntraGroupId`. |
-| `Initialize-PacKitFolder` | Create `.packit` + the managed subfolders (idempotent). |
-| `Test-PacKitApplicationFragment` | Validate a fragment (`-Detailed` for Errors/Warnings). Fails invalid GUIDs, an empty name, or any XML-invalid character (control chars / lone surrogates) in a text field. |
+| `New-OpmApplicationFragment` | Create a new in-memory fragment (generates a braced-UPPERCASE AppId). |
+| `Import-OpmApplicationFragment` | Load a fragment from `-SourceFolder` (`.packit\<AppId>.xml`, or the first `*.xml`) or `-LiteralPath`. |
+| `Export-OpmApplicationFragment` | Save a fragment to `-SourceFolder` (`.packit\<AppId>.xml`) or `-LiteralPath`. Supports `-WhatIf`, `-RelativizePaths`, `-PassThru`. |
+| `Set-OpmApplication` | Update application-level fields (Name, Vendor, Description, IconPath, OS, …). |
+| `Set-OpmDetectionRule` | Set the detection-rule fields (MSI/File/Registry/Script). |
+| `Add-OpmPackage` | Add an installer package; `Type` is derived from the path extension. |
+| `Set-OpmPackage` | Update an existing package by `-PackageId`. |
+| `Remove-OpmPackage` | Remove a package by `-PackageId`. |
+| `Add-OpmWinGetScanResult` | Attach a WinGet catalog match to a package. |
+| `Add-OpmAssignment` | Add an Intune (Entra group) assignment. |
+| `Remove-OpmAssignment` | Remove an assignment by `-MsEntraGroupId`. |
+| `Initialize-OpmFolder` | Create `.packit` + the managed subfolders (idempotent). |
+| `Test-OpmApplicationFragment` | Validate a fragment (`-Detailed` for Errors/Warnings). Fails invalid GUIDs, an empty name, or any XML-invalid character (control chars / lone surrogates) in a text field. |
 
 `Get-Help <cmdlet> -Full` has parameter details and examples for each.
 
@@ -143,20 +143,20 @@ PacKit.ApplicationFragment
 ## Using it in a pipeline
 
 The cmdlets are non-interactive and pipeline-friendly. `Export` honours
-`-WhatIf`; `Test-PacKitApplicationFragment` returns a boolean (and a `-Detailed`
+`-WhatIf`; `Test-OpmApplicationFragment` returns a boolean (and a `-Detailed`
 report) for gating a build:
 
 ```powershell
 $ErrorActionPreference = 'Stop'
-Import-Module PacKit   # or: Import-Module .\PacKit\PacKit.psd1
+Import-Module OpenPackageManifest   # or: Import-Module .\OpenPackageManifest\OpenPackageManifest.psd1
 
-$app = New-PacKitApplicationFragment -Name $env:APP_NAME -Vendor $env:APP_VENDOR
-Add-PacKitPackage -Fragment $app -Path $env:INSTALLER_PATH -InstallCmdLine $env:INSTALL_ARGS -Version $env:APP_VERSION
+$app = New-OpmApplicationFragment -Name $env:APP_NAME -Vendor $env:APP_VENDOR
+Add-OpmPackage -Fragment $app -Path $env:INSTALLER_PATH -InstallCmdLine $env:INSTALL_ARGS -Version $env:APP_VERSION
 
-$report = Test-PacKitApplicationFragment -Fragment $app -Detailed
+$report = Test-OpmApplicationFragment -Fragment $app -Detailed
 if (-not $report.IsValid) { $report.Errors | Write-Error; exit 1 }
 
-Export-PacKitApplicationFragment -Fragment $app -SourceFolder $env:APP_SOURCE -RelativizePaths
+Export-OpmApplicationFragment -Fragment $app -SourceFolder $env:APP_SOURCE -RelativizePaths
 ```
 
 ---
@@ -181,7 +181,7 @@ Everything goes through [`build.ps1`](build.ps1) (the same entry point CI uses):
 | `Clean` | Remove `output\`. |
 | `Lint` | Run PSScriptAnalyzer with [`PSScriptAnalyzerSettings.psd1`](PSScriptAnalyzerSettings.psd1). |
 | `Test` | Run the Pester 5 suite; writes `output\testResults.xml` (NUnit). |
-| `Package` | Stage the runtime module to `output\PacKit\` and zip it to `output\PacKit-<version>.zip`. |
+| `Package` | Stage the runtime module to `output\OpenPackageManifest\` and zip it to `output\OpenPackageManifest-<version>.zip`. |
 | `Publish` | `Publish-Module` the staged module to the PowerShell Gallery (needs an API key). |
 | `All` | `Clean` + `Lint` + `Test` + `Package` (default). |
 
@@ -190,7 +190,7 @@ code) is also available via [`Invoke-Tests.ps1`](Invoke-Tests.ps1):
 
 ```powershell
 powershell -NoProfile -File .\Invoke-Tests.ps1
-powershell -NoProfile -File .\Invoke-Tests.ps1 -TestPath .\tests\PacKit.Emitter.Tests.ps1
+powershell -NoProfile -File .\Invoke-Tests.ps1 -TestPath .\tests\OpenPackageManifest.Emitter.Tests.ps1
 ```
 
 `tests\fixtures\golden-fragment.xml` and `golden-empty.xml` are hand-built from
@@ -206,7 +206,7 @@ CI runs lint + test on every push/PR (Windows PowerShell 5.1 **and** PowerShell
 
 To cut a release:
 
-1. Bump `ModuleVersion` in [`PacKit/PacKit.psd1`](PacKit/PacKit.psd1) and update
+1. Bump `ModuleVersion` in [`OpenPackageManifest/OpenPackageManifest.psd1`](OpenPackageManifest/OpenPackageManifest.psd1) and update
    [`CHANGELOG.md`](CHANGELOG.md).
 2. Tag the commit and push the tag:
    ```bash
@@ -215,7 +215,7 @@ To cut a release:
    ```
 3. The release pipeline ([`.github/workflows/release.yml`](.github/workflows/release.yml)
    / the `publish` job in `.gitlab-ci.yml`) builds, tests, **publishes to the
-   PowerShell Gallery**, and attaches `PacKit-<version>.zip` to the release.
+   PowerShell Gallery**, and attaches `OpenPackageManifest-<version>.zip` to the release.
 
 The publish step needs a PowerShell Gallery API key supplied as the
 `PSGALLERY_API_KEY` secret (GitHub) or a protected CI/CD variable (GitLab). To
@@ -231,10 +231,10 @@ publish manually:
 ## Repository layout
 
 ```
-packit-powershell/
-  PacKit/                          # the module (shipped)
-    PacKit.psd1                    #   manifest (RootModule, exports, PS 5.1 + Core)
-    PacKit.psm1                    #   loader (dot-sources Private + Public)
+open-package-manifest/
+  OpenPackageManifest/             # the module (shipped)
+    OpenPackageManifest.psd1       #   manifest (RootModule, exports, PS 5.1 + Core)
+    OpenPackageManifest.psm1       #   loader (dot-sources Private + Public)
     Public/                        #   the 13 exported cmdlets (one per file)
     Private/                       #   schema, emitter, parser, escaping, GUID, path helpers
   tests/                           # Pester 5 suites + golden fixtures
@@ -244,12 +244,12 @@ packit-powershell/
   PSScriptAnalyzerSettings.psd1    # lint configuration
   .github/workflows/               # GitHub Actions (ci.yml, release.yml)
   .gitlab-ci.yml                   # GitLab CI (lint / test / publish)
-  README.md  CHANGELOG.md  LICENSE.txt  .gitignore
+  README.md  CHANGELOG.md  LICENSE  .gitignore
 ```
 
 ---
 
 ## License
 
-Copyright (c) Caphyon LTD. Use is governed by the PacKit EULA —
-see [`LICENSE.txt`](LICENSE.txt) and <https://www.getpackit.com/eula/>.
+MIT — see [`LICENSE`](LICENSE).
+

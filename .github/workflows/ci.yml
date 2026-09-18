@@ -49,6 +49,6 @@ jobs:
       - name: Upload module package
         uses: actions/upload-artifact@v4
         with:
-          name: PacKit-module
+          name: OpenPackageManifest-module
           path: output/*.zip
           if-no-files-found: error
