@@ -1,15 +1,41 @@
-# OpenPackageManifest PowerShell module
+<img width="548" height="259" alt="OPM_Logo_White" src="https://github.com/user-attachments/assets/44925473-4115-4ec8-9e0b-4ab4e83a2407" />
 
-Author, load, modify and save **PacKit application fragments** and the
-`.packit` metadata folder — the per-application XML the
-[PacKit](https://www.getpackit.com/) app consumes. Built for CI/CD: a third
-party instruments an application with a `.packit` folder, and someone later
-loads it in PacKit.
+
+# Open Package Manifest PowerShell module
+
+The Open Package Manifest can describe a Windows application package independently
+of the tool that created it. The  vision is simple. Packaging information 
+shouldn't live inside one product. Or spread across multiple ones. It should 
+travel with the application itself.
+
+We call a **fragment** the folder standing next to your application where all 
+the metadata is stored. You can set your own custom name, for example ".opm".
+We used ".packit" because the first application to adopt the OPM standard 
+was PacKit.
+
+This module enables to you author, load, modify and save **application fragments**
+from the `.packit` metadata folder — the 
+open package manifest that [PacKit](https://www.getpackit.com/) can consume. 
+
+It's built for CI/CD: a third party instruments an application with a `.packit` 
+folder, and you can later load it in PacKit or into another application 
+using with the help of this PowerShell module.
 
 The module produces output that is **byte-identical** to what PacKit itself
 writes, so a load → modify → save round-trip is lossless and diffs stay clean.
 
 ---
+<svg width="548" height="259" viewBox="0 0 548 259" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M61.6382 130.67C61.6382 80.6985 87.3642 54.5539 126.375 54.5539C165.386 54.5539 191.112 80.6985 191.112 130.67C191.112 180.642 165.386 206.785 126.375 206.785C87.3642 206.785 61.6382 180.64 61.6382 130.67ZM157.164 141.634V119.707C157.164 96.3029 145.566 83.0197 126.375 83.0197C107.184 83.0197 95.5862 96.3029 95.5862 119.707V141.634C95.5862 165.038 107.184 178.321 126.375 178.321C145.566 178.321 157.164 165.038 157.164 141.634Z" fill="white"/>
+<path d="M212.619 204.257V57.0859H282.207C309.62 57.0859 326.912 76.2727 326.912 104.104C326.912 131.935 309.62 151.122 282.207 151.122H244.671V204.255L212.619 204.257ZM244.671 123.291H278.41C287.899 123.291 293.803 118.231 293.803 108.743V99.4655C293.803 89.9776 287.901 84.9173 278.41 84.9173H244.671V123.291Z" fill="white"/>
+<path d="M455.751 107.688H455.118L444.364 129.194L415.685 181.275L387.64 129.405L376.462 106.213H375.831V204.257H345.677V57.0859H379.627L415.687 126.032H416.109L451.746 57.0859H485.909V204.257H455.755V107.688H455.751Z" fill="white"/>
+<path d="M538.892 4.88257H507.652V255.421H538.892V4.88257Z" fill="white"/>
+<path d="M538.888 224.183H452.326V255.421H538.888V224.183Z" fill="white"/>
+<path d="M538.89 4.22858H452.328V35.4666H538.89V4.22858Z" fill="white"/>
+<path d="M41.6506 4.22858H10.4107V254.767H41.6506V4.22858Z" fill="white"/>
+<path d="M96.9744 4.22858H10.4126V35.4666H96.9744V4.22858Z" fill="white"/>
+<path d="M96.9744 224.183H10.4127V255.421H96.9744V224.183Z" fill="white"/>
+</svg>
 
 ## Requirements
 
